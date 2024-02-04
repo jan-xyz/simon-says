@@ -1,14 +1,21 @@
 clean:
 	go clean
-	rm -f wasm_exec.js
+	rm -rf public
 
-
-wasm_exec.js:
-	cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" .
 
 build: wasm_exec.js
 	GOOS=js GOARCH=wasm go build -o main.wasm
 
+bundle:
+	mkdir -p public
+	cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" ./public/
+	cp ./main.wasm ./public/
+	cp ./index.html ./public/
+	cp ./favicon.ico ./public/
+
+vim:
+	GOOS=js GOARCH=wasm nvim
+
 .PHONY: serve
-serve: build wasm_exec.js
-	go run ./serve/main.go
+serve: build bundle
+	go run ./serve/main.go -dir public
