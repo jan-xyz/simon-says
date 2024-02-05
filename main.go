@@ -2,13 +2,79 @@ package main
 
 import (
 	"crypto/rand"
-	"fmt"
+	"log"
 	"math/big"
+	"net/http"
+
+	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
+type button struct {
+	app.Compo
+	Color string
+}
+
+func (h *button) Render() app.UI {
+	return app.Div().Style("color", h.Color).Text(h.Color)
+}
+
+func NewSimonSays() *simonSays {
+	return &simonSays{}
+}
+
+type simonSays struct {
+	app.Compo
+}
+
+func (h *simonSays) Render() app.UI {
+	t := app.Table()
+
+	r1 := app.Tr()
+	r1.Body(
+		app.Td().Body(&button{Color: "yellow"}),
+		app.Td().Body(&button{Color: "red"}),
+	)
+
+	r2 := app.Tr()
+	r2.Body(
+		app.Td().Body(&button{Color: "blue"}),
+		app.Td().Body(&button{Color: "green"}),
+	)
+
+	t.Body(r1, r2)
+
+	return app.Div().Body(
+		t,
+	)
+}
+
 func main() {
-	s := GenerateSequence(6)
-	fmt.Printf("%v\n", s)
+	app.Route("/", NewSimonSays())
+
+	// When executed on the client-side, the RunWhenOnBrowser() function
+	// launches the app,  starting a loop that listens for app events and
+	// executes client instructions. Since it is a blocking call, the code below
+	// it will never be executed.
+	//
+	// When executed on the server-side, RunWhenOnBrowser() does nothing, which
+	// lets room for server implementation without the need for precompiling
+	// instructions.
+	app.RunWhenOnBrowser()
+
+	// Finally, launching the server that serves the app is done by using the Go
+	// standard HTTP package.
+	//
+	// The Handler is an HTTP handler that serves the client and all its
+	// required resources to make it work into a web browser. Here it is
+	// configured to handle requests with a path that starts with "/".
+	http.Handle("/", &app.Handler{
+		Name:        "Hello",
+		Description: "An Hello World! example",
+	})
+
+	if err := http.ListenAndServe(":8000", nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func GenerateSequence(l int) []int64 {
