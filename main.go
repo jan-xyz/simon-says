@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/rand"
-	"fmt"
 	"log"
 	"math/big"
 	"net/http"
@@ -16,7 +15,10 @@ type button struct {
 }
 
 func (h *button) Render() app.UI {
-	return app.Button().Class(fmt.Sprintf("button-%s", h.Color)).Body(app.Span().Text(""))
+	return app.Button().
+		Class("simonButton", "simon-button").
+		Style("--background", h.Color).
+		Body(app.Span().Text(""))
 }
 
 func NewSimonSays() *simonSays {
@@ -28,18 +30,18 @@ type simonSays struct {
 }
 
 func (h *simonSays) Render() app.UI {
-	t := app.Table()
+	t := app.Table().Class("game-field")
 
 	r1 := app.Tr()
 	r1.Body(
-		app.Td().Body(&button{Color: "yellow"}),
-		app.Td().Body(&button{Color: "red"}),
+		app.Td().Body(&button{Color: "linear-gradient(144deg, rgba(163,163,0,1) 0%, rgba(254,255,0,1) 50%, rgba(251,251,160,1) 100%)"}),
+		app.Td().Body(&button{Color: "linear-gradient(144deg, rgba(200,1,1,1) 0%, rgba(255,0,86,1) 50%, rgba(116,0,43,1) 100%)"}),
 	)
 
 	r2 := app.Tr()
 	r2.Body(
-		app.Td().Body(&button{Color: "blue"}),
-		app.Td().Body(&button{Color: "green"}),
+		app.Td().Body(&button{Color: "linear-gradient(144deg, rgba(0,69,255,1) 0%, rgba(73,82,140,1) 50%, rgba(4,0,116,1) 100%)"}),
+		app.Td().Body(&button{Color: "linear-gradient(144deg, rgba(60,232,54,1) 0%, rgba(73,140,83,1) 50%, rgba(0,116,23,1) 100%)"}),
 	)
 
 	t.Body(r1, r2)
