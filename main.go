@@ -16,7 +16,7 @@ type button struct {
 
 func (h *button) Render() app.UI {
 	return app.Button().
-		Class("simonButton", "simon-button").
+		Class("simon-button").
 		Style("--background", h.Color).
 		Body(app.Span().Text(""))
 }
