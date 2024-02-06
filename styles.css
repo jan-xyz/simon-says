@@ -16,6 +16,16 @@ html, body {
   background: linear-gradient(#2e343a, #1c1d1f);
 }
 
+/* Game field */
+.game-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  height: 400px;
+}
+
+
 /* yellow button */
 .button-yellow {
   align-items: center;
