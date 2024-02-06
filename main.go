@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"fmt"
 	"log"
 	"math/big"
 	"net/http"
@@ -15,7 +16,7 @@ type button struct {
 }
 
 func (h *button) Render() app.UI {
-	return app.Div().Style("color", h.Color).Text(h.Color)
+	return app.Button().Class(fmt.Sprintf("button-%s", h.Color)).Body(app.Span().Text(""))
 }
 
 func NewSimonSays() *simonSays {
@@ -43,7 +44,7 @@ func (h *simonSays) Render() app.UI {
 
 	t.Body(r1, r2)
 
-	return app.Div().Body(
+	return app.Div().Class("fill", "background").Body(
 		t,
 	)
 }
@@ -68,8 +69,11 @@ func main() {
 	// required resources to make it work into a web browser. Here it is
 	// configured to handle requests with a path that starts with "/".
 	http.Handle("/", &app.Handler{
-		Name:        "Hello",
-		Description: "An Hello World! example",
+		Name:        "Simon Says",
+		Description: "A game of simon says",
+		Styles: []string{
+			"/web/styles.css",
+		},
 	})
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {
