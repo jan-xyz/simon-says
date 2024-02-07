@@ -10,15 +10,15 @@ const (
 	click events = "click"
 )
 
-func NewSimonSays() *simonSays {
-	return &simonSays{}
+func NewSimonSaysUI() *simonSaysUI {
+	return &simonSaysUI{}
 }
 
-type simonSays struct {
+type simonSaysUI struct {
 	app.Compo
 }
 
-func (h *simonSays) Render() app.UI {
+func (h *simonSaysUI) Render() app.UI {
 	t := app.Div().Class("game-field")
 
 	t.Body(
@@ -41,18 +41,18 @@ func (h *simonSays) Render() app.UI {
 	)
 }
 
-func (h *simonSays) onClickFirst(ctx app.Context, e app.Event) {
-	ctx.NewActionWithValue(click, 0)
+func (h *simonSaysUI) onClickFirst(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, int64(0))
 }
 
-func (h *simonSays) onClickSecond(ctx app.Context, e app.Event) {
-	ctx.NewActionWithValue(click, 1)
+func (h *simonSaysUI) onClickSecond(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, int64(1))
 }
 
-func (h *simonSays) onClickThird(ctx app.Context, e app.Event) {
-	ctx.NewActionWithValue(click, 2)
+func (h *simonSaysUI) onClickThird(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, int64(2))
 }
 
-func (h *simonSays) onClickFourth(ctx app.Context, e app.Event) {
-	ctx.NewActionWithValue(click, 3)
+func (h *simonSaysUI) onClickFourth(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, int64(3))
 }

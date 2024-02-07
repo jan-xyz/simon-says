@@ -1,17 +1,18 @@
 package main
 
 import (
-	"crypto/rand"
 	"log"
-	"math/big"
 	"net/http"
 
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
 func main() {
-	app.Handle(click, handleClick)
-	app.Route("/", NewSimonSays())
+	logic := NewSimonSaysLogic()
+	app.Handle(click, logic.handleClick)
+
+	ui := NewSimonSaysUI()
+	app.Route("/", ui)
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
 	// launches the app,  starting a loop that listens for app events and
@@ -40,17 +41,4 @@ func main() {
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func GenerateSequence(l int) []int64 {
-	seq := []int64{}
-	for i := 0; i < l; i++ {
-		n, err := rand.Int(rand.Reader, big.NewInt(4))
-		if err != nil {
-			panic(err)
-		}
-		seq = append(seq, n.Int64())
-
-	}
-	return seq
 }
