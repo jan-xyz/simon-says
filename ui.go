@@ -1,14 +1,17 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
+type events = string
+
+const (
+	click events = "click"
+)
+
 func NewSimonSays() *simonSays {
-	s := &simonSays{}
-	return s
+	return &simonSays{}
 }
 
 type simonSays struct {
@@ -21,16 +24,16 @@ func (h *simonSays) Render() app.UI {
 	t.Body(
 		app.Button().
 			Class("simon-button").
-			Body(app.Span().Text("")).OnClick(h.firstButtonClicked),
+			Body(app.Span().Text("")).OnClick(h.onClickFirst),
 		app.Button().
 			Class("simon-button").
-			Body(app.Span().Text("")).OnClick(h.secondButtonClicked),
+			Body(app.Span().Text("")).OnClick(h.onClickSecond),
 		app.Button().
 			Class("simon-button").
-			Body(app.Span().Text("")).OnClick(h.thirdButtonClicked),
+			Body(app.Span().Text("")).OnClick(h.onClickThird),
 		app.Button().
 			Class("simon-button").
-			Body(app.Span().Text("")).OnClick(h.fourthButtonClicked),
+			Body(app.Span().Text("")).OnClick(h.onClickFourth),
 	)
 
 	return app.Div().Class("fill", "background").Body(
@@ -38,18 +41,18 @@ func (h *simonSays) Render() app.UI {
 	)
 }
 
-func (h *simonSays) firstButtonClicked(ctx app.Context, e app.Event) {
-	fmt.Println("clicked first button")
+func (h *simonSays) onClickFirst(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, 0)
 }
 
-func (h *simonSays) secondButtonClicked(ctx app.Context, e app.Event) {
-	fmt.Println("clicked second button")
+func (h *simonSays) onClickSecond(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, 1)
 }
 
-func (h *simonSays) thirdButtonClicked(ctx app.Context, e app.Event) {
-	fmt.Println("clicked third button")
+func (h *simonSays) onClickThird(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, 2)
 }
 
-func (h *simonSays) fourthButtonClicked(ctx app.Context, e app.Event) {
-	fmt.Println("clicked fourth button")
+func (h *simonSays) onClickFourth(ctx app.Context, e app.Event) {
+	ctx.NewActionWithValue(click, 3)
 }

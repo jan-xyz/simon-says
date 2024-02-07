@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	app.Handle(click, handleClick)
 	app.Route("/", NewSimonSays())
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
