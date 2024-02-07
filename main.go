@@ -34,8 +34,9 @@ func main() {
 		Name:        "Simon Says",
 		Description: "A game of simon says",
 		Styles: []string{
-			"/web/styles.css",
+			"/_site/styles.css",
 		},
+		Resources: app.LocalDir("_site"),
 	})
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {
