@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: 'stable'
       - run: make build
-      - uses: actions/upload-pages-artifact
+      - uses: actions/upload-pages-artifact@v3
     
 
   # Deploy job
