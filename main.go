@@ -9,40 +9,6 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
-type button struct {
-	app.Compo
-	Background string
-}
-
-func (h *button) Render() app.UI {
-	return app.Button().
-		Class("simon-button").
-		Body(app.Span().Text(""))
-}
-
-func NewSimonSays() *simonSays {
-	return &simonSays{}
-}
-
-type simonSays struct {
-	app.Compo
-}
-
-func (h *simonSays) Render() app.UI {
-	t := app.Div().Class("game-field")
-
-	t.Body(
-		&button{Background: "yellow-gradient"},
-		&button{Background: "red-gradient"},
-		&button{Background: "green-gradient"},
-		&button{Background: "blue-gradient"},
-	)
-
-	return app.Div().Class("fill", "background").Body(
-		t,
-	)
-}
-
 func main() {
 	app.Route("/", NewSimonSays())
 
