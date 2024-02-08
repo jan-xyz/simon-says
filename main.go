@@ -28,12 +28,16 @@ func main() {
 	// instructions.
 	app.RunWhenOnBrowser()
 
+	h := &app.Handler{
+		Name:        "Simon Says",
+		Description: "A game of simon says",
+		Styles: []string{
+			"/web/styles.css",
+		},
+	}
 	if !*serve {
-		err := app.GenerateStaticWebsite("_site", &app.Handler{
-			Name:        "Hello",
-			Description: "An Hello World! example",
-			Resources:   app.GitHubPages("simon-says"),
-		})
+		h.Resources = app.GitHubPages("simon-says")
+		err := app.GenerateStaticWebsite("_site", h)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,13 +50,7 @@ func main() {
 	// The Handler is an HTTP handler that serves the client and all its
 	// required resources to make it work into a web browser. Here it is
 	// configured to handle requests with a path that starts with "/".
-	http.Handle("/", &app.Handler{
-		Name:        "Simon Says",
-		Description: "A game of simon says",
-		Styles: []string{
-			"/web/styles.css",
-		},
-	})
+	http.Handle("/", h)
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatal(err)
