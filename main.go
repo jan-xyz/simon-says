@@ -12,11 +12,10 @@ func main() {
 	serve := flag.Bool("serve", false, "set serve to serve instead of generating resources")
 	flag.Parse()
 
-	logic := NewSimonSaysLogic()
-	app.Handle(click, logic.handleClick)
+	g := NewGame()
+	app.Route("/", g)
 
-	ui := NewSimonSaysUI()
-	app.Route("/", ui)
+	app.Handle(click, g.handleClick)
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
 	// launches the app,  starting a loop that listens for app events and

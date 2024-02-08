@@ -25,6 +25,7 @@ html, body {
   height: 400px;
 }
 
+/* button */
 .simon-button:nth-of-type(1) {
   background-image: linear-gradient(144deg, rgba(163,163,0,1) 0%, rgba(254,255,0,1) 50%, rgba(251,251,160,1) 100%);
 }
@@ -32,6 +33,7 @@ html, body {
 .simon-button:nth-of-type(2) {
   background-image: linear-gradient(144deg, rgba(200,1,1,1) 0%, rgba(255,0,86,1) 50%, rgba(116,0,43,1) 100%);
 }
+
 .simon-button:nth-of-type(3) {
   background-image: linear-gradient(144deg, rgba(0,69,255,1) 0%, rgba(73,82,140,1) 50%, rgba(4,0,116,1) 100%);
 }
@@ -40,7 +42,6 @@ html, body {
   background-image: linear-gradient(144deg, rgba(60,232,54,1) 0%, rgba(73,140,83,1) 50%, rgba(0,116,23,1) 100%);
 }
 
-/* button */
 .simon-button {
   align-items: center;
   border: 0;
@@ -64,8 +65,8 @@ html, body {
   cursor: pointer;
 }
 
-.simon-button:active {
-  outline: 0;
+.simon-button:active span {
+  background: none;
 }
 
 .simon-button span {
@@ -77,8 +78,8 @@ html, body {
   transition: 300ms;
 }
 
-.simon-button:hover span {
-  background: none;
+.simon-button.current span {
+  background-color: #D0D0D0;
 }
 
 @media (min-width: 768px) {
