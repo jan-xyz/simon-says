@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
@@ -8,6 +9,9 @@ import (
 )
 
 func main() {
+	serve := flag.Bool("serve", false, "set serve to serve instead of generating resources")
+	flag.Parse()
+
 	logic := NewSimonSaysLogic()
 	app.Handle(click, logic.handleClick)
 
@@ -24,6 +28,18 @@ func main() {
 	// instructions.
 	app.RunWhenOnBrowser()
 
+	if !*serve {
+		err := app.GenerateStaticWebsite("_site", &app.Handler{
+			Name:        "Hello",
+			Description: "An Hello World! example",
+			Resources:   app.GitHubPages("REPOSITORY_NAME"),
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	// Finally, launching the server that serves the app is done by using the Go
 	// standard HTTP package.
 	//
@@ -34,9 +50,8 @@ func main() {
 		Name:        "Simon Says",
 		Description: "A game of simon says",
 		Styles: []string{
-			"/_site/styles.css",
+			"/web/styles.css",
 		},
-		Resources: app.LocalDir("_site"),
 	})
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {

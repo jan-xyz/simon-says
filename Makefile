@@ -1,6 +1,6 @@
 build:
-	GOARCH=wasm GOOS=js go build -o _site/app.wasm
-	cp styles.css _site/
+	GOARCH=wasm GOOS=js go build -o web/app.wasm
+	cp styles.css web/
 
 vim:
 	GOOS=js GOARCH=wasm nvim
