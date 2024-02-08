@@ -32,7 +32,7 @@ func main() {
 		err := app.GenerateStaticWebsite("_site", &app.Handler{
 			Name:        "Hello",
 			Description: "An Hello World! example",
-			Resources:   app.GitHubPages("REPOSITORY_NAME"),
+			Resources:   app.GitHubPages("simon-says"),
 		})
 		if err != nil {
 			log.Fatal(err)
