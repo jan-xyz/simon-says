@@ -43,7 +43,7 @@ func (b *button) handleActivate(ctx app.Context, a app.Action) {
 	ctx.Dispatch(func(_ app.Context) {
 		b.Active = true
 	})
-	ctx.After(900*time.Millisecond, func(_ app.Context) {
+	ctx.After(800*time.Millisecond, func(_ app.Context) {
 		ctx.Dispatch(func(_ app.Context) {
 			b.Active = false
 		})

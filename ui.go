@@ -12,10 +12,10 @@ import (
 type events = string
 
 const (
-	click        events = "click"
-	playSequence events = "playSequence"
-	playButton   events = "play%d"
-	newGame      events = "newGame"
+	click      events = "click"
+	simonSays  events = "playSequence"
+	playButton events = "play%d"
+	newGame    events = "newGame"
 )
 
 type gameState int
@@ -24,6 +24,8 @@ const (
 	gameStateNoGame gameState = iota
 	gameStateSimonSays
 	gameStatePlayerSays
+	gameStateLost
+	gameStateWon
 )
 
 func NewGame() *game {
@@ -38,11 +40,12 @@ type game struct {
 	sequence []int64
 	clicks   int
 	stage    int
-	state    gameState
+	State    gameState
 }
 
 func (g *game) OnMount(ctx app.Context) {
-	ctx.Handle(playSequence, g.playSequence)
+	// TODO: move logic out of the UI thread
+	ctx.Handle(simonSays, g.simonSays)
 	ctx.Handle(click, g.handleClick)
 	ctx.Handle(newGame, g.handleNewGame)
 }
@@ -62,16 +65,34 @@ func (g *game) Render() app.UI {
 		fourthButton,
 	)
 
+	txt := ""
+	switch g.State {
+	case gameStateNoGame:
+		txt = "Start a New Game"
+	case gameStatePlayerSays:
+		txt = "Your turn"
+	case gameStateSimonSays:
+		txt = "Simon says..."
+	case gameStateLost:
+		txt = "You Lost. Start a New Game"
+	case gameStateWon:
+		txt = "You Won. Start a New Game"
+	}
+
+	// TODO: styling
+	gameStateText := app.Div().Class("game-state").Text(txt)
+	newGameButton := app.Button().Class("new-game").Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
+		ctx.NewAction(newGame)
+	})
 	return app.Div().Class("fill", "background").Body(
 		gameField,
-		app.Button().Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
-			ctx.NewAction(newGame)
-		}),
+		gameStateText,
+		newGameButton,
 	)
 }
 
-func (g *game) playSequence(ctx app.Context, a app.Action) {
-	g.state = gameStateSimonSays
+func (g *game) simonSays(ctx app.Context, a app.Action) {
+	g.Update()
 	sequence, ok := a.Value.([]int64)
 	if !ok {
 		fmt.Println("wrong type")
@@ -88,20 +109,24 @@ func (g *game) playSequence(ctx app.Context, a app.Action) {
 			ctx.NewAction(fmt.Sprintf(playButton, btnIndex))
 			<-time.After(time.Second)
 		}
-		g.state = gameStatePlayerSays
 	})
+	g.State = gameStatePlayerSays
+	g.Update()
 }
 
 func (g *game) handleNewGame(ctx app.Context, a app.Action) {
 	fmt.Println("New Game")
 	g.clicks = 0
+	// TODO: allow setting difficulty
 	g.sequence = GenerateSequence(4)
 	g.stage = 1
-	ctx.NewActionWithValue(playSequence, g.sequence[:1])
+	g.State = gameStateSimonSays
+	ctx.NewActionWithValue(simonSays, g.sequence[:1])
 }
 
 func (g *game) handleClick(ctx app.Context, a app.Action) {
-	if g.state != gameStatePlayerSays {
+	if g.State != gameStatePlayerSays {
+		fmt.Println("no game")
 		return
 	}
 	click, ok := a.Value.(int64)
@@ -109,26 +134,23 @@ func (g *game) handleClick(ctx app.Context, a app.Action) {
 		fmt.Println("wrong type")
 		return
 	}
-	if len(g.sequence) <= g.clicks {
-		fmt.Println("game is over")
-		return
-	}
 
 	fmt.Println("received click:", click)
 	if g.sequence[g.clicks] != click {
-		fmt.Println("YOU LOSE!")
+		g.State = gameStateLost
 		return
 	}
 	g.clicks++
 	if len(g.sequence) == g.clicks {
-		fmt.Println("YOU WIN!")
+		g.State = gameStateWon
 		return
 	}
 	if g.clicks == g.stage {
 		g.clicks = 0
 		g.stage++
-		ctx.After(300*time.Millisecond, func(ctx app.Context) {
-			ctx.NewActionWithValue(playSequence, g.sequence[:g.stage])
+		g.State = gameStateSimonSays
+		ctx.After(1*time.Second, func(ctx app.Context) {
+			ctx.NewActionWithValue(simonSays, g.sequence[:g.stage])
 		})
 	}
 }

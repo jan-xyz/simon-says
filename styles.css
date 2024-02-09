@@ -16,6 +16,12 @@ html, body {
   background: linear-gradient(#2e343a, #1c1d1f);
 }
 
+/* Game State Communication*/
+
+.game-state {
+  color: white;
+}
+
 /* Game field */
 .game-field {
   display: flex;
