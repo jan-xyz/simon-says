@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -14,33 +13,27 @@ type events = string
 const (
 	click        events = "click"
 	playSequence events = "playSequence"
+	newGame      events = "newGame"
 )
 
 func NewGame() *game {
 	return &game{
-		buttonIds: []string{
-			"firstButton",
-			"secondButton",
-			"thirdButton",
-			"fourthButton",
-		},
-		sequence: GenerateSequence(4),
+		sequence: []int64{},
 	}
 }
 
 type game struct {
 	app.Compo
 
-	buttonIds []string
-	sequence  []int64
-	clicks    int
+	sequence []int64
+	clicks   int
 }
 
-func (h *game) OnMount(ctx app.Context) {
-	ctx.Handle(playSequence, h.playSequence)
+func (g *game) OnMount(ctx app.Context) {
+	ctx.Handle(playSequence, g.playSequence)
 }
 
-func (h *game) Render() app.UI {
+func (g *game) Render() app.UI {
 	gameField := app.Div().Class("game-field")
 
 	firstButton := NewButton(0)
@@ -57,11 +50,13 @@ func (h *game) Render() app.UI {
 
 	return app.Div().Class("fill", "background").Body(
 		gameField,
-		app.Button().Text("New Game").OnClick(h.handleNewGame),
+		app.Button().Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
+			ctx.NewAction(newGame)
+		}),
 	)
 }
 
-func (h *game) playSequence(ctx app.Context, a app.Action) {
+func (g *game) playSequence(ctx app.Context, a app.Action) {
 	sequence, ok := a.Value.([]int64)
 	if !ok {
 		fmt.Println("wrong type")
@@ -69,18 +64,20 @@ func (h *game) playSequence(ctx app.Context, a app.Action) {
 	}
 	fmt.Println("sequence:", sequence)
 	for _, btnIndex := range sequence {
-		btn := app.Window().GetElementByID(h.buttonIds[btnIndex])
-		fmt.Println(btn)
-		ctx.After(time.Second, func(ctx app.Context) {
-		})
+		btn := app.Window().GetElementByID(fmt.Sprintf("button%d", btnIndex))
+		fmt.Println("found button:", btn.Truthy())
 	}
 }
 
-func (s *game) handleNewGame(ctx app.Context, a app.Event) {
+func (g *game) handleNewGame(ctx app.Context, a app.Action) {
 	fmt.Println("New Game")
+	g.clicks = 0
+	seq := GenerateSequence(4)
+	g.sequence = seq
+	ctx.NewActionWithValue(playSequence, seq)
 }
 
-func (s *game) handleClick(_ app.Context, a app.Action) {
+func (g *game) handleClick(ctx app.Context, a app.Action) {
 	click, ok := a.Value.(int64)
 	if !ok {
 		fmt.Println("wrong type")
@@ -88,17 +85,19 @@ func (s *game) handleClick(_ app.Context, a app.Action) {
 	}
 
 	fmt.Println("received click:", click)
-	if s.sequence[s.clicks] != click {
+	if g.sequence[g.clicks] != click {
 		fmt.Println("YOU LOSE!")
-		s.clicks = 0
-		s.sequence = GenerateSequence(4)
+		g.clicks = 0
+		g.sequence = GenerateSequence(4)
+		ctx.NewActionWithValue(playSequence, g.sequence)
 		return
 	}
-	s.clicks++
-	if len(s.sequence) == s.clicks {
+	g.clicks++
+	if len(g.sequence) == g.clicks {
 		fmt.Println("YOU WIN!")
-		s.clicks = 0
-		s.sequence = GenerateSequence(4)
+		g.clicks = 0
+		g.sequence = GenerateSequence(4)
+		ctx.NewActionWithValue(playSequence, g.sequence)
 	}
 }
 
@@ -112,6 +111,5 @@ func GenerateSequence(l int) []int64 {
 		seq = append(seq, n.Int64())
 
 	}
-	fmt.Println(seq)
 	return seq
 }

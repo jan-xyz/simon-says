@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	serve := flag.Bool("serve", false, "set serve to serve instead of generating resources")
+	serve := flag.Bool("serve", false, "set to serve instead of generating resources")
 	flag.Parse()
 
 	g := NewGame()
 	app.Route("/", g)
 
 	app.Handle(click, g.handleClick)
+	app.Handle(newGame, g.handleNewGame)
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
 	// launches the app,  starting a loop that listens for app events and
