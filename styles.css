@@ -78,8 +78,8 @@ html, body {
   transition: 300ms;
 }
 
-.simon-button.current span {
-  background-color: #D0D0D0;
+.simon-button.active span {
+  background: none;
 }
 
 @media (min-width: 768px) {

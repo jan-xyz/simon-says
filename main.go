@@ -15,9 +15,6 @@ func main() {
 	g := NewGame()
 	app.Route("/", g)
 
-	app.Handle(click, g.handleClick)
-	app.Handle(newGame, g.handleNewGame)
-
 	// When executed on the client-side, the RunWhenOnBrowser() function
 	// launches the app,  starting a loop that listens for app events and
 	// executes client instructions. Since it is a blocking call, the code below
