@@ -1,10 +1,7 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
-	"math/big"
-	"time"
 
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -12,10 +9,11 @@ import (
 type events = string
 
 const (
-	click      events = "click"
-	simonSays  events = "playSequence"
-	playButton events = "play%d"
-	newGame    events = "newGame"
+	click       events = "click"
+	simonSays   events = "playSequence"
+	playButton  events = "play%d"
+	newGame     events = "newGame"
+	stateChange events = "stateChange"
 )
 
 type gameState int
@@ -28,29 +26,21 @@ const (
 	gameStateWon
 )
 
-func NewGame() *game {
-	return &game{
-		sequence: []int64{},
-	}
+func NewUI() *ui {
+	return &ui{}
 }
 
-type game struct {
+type ui struct {
 	app.Compo
 
-	sequence []int64
-	clicks   int
-	stage    int
-	State    gameState
+	Text string
 }
 
-func (g *game) OnMount(ctx app.Context) {
-	// TODO: move logic out of the UI thread
-	ctx.Handle(simonSays, g.simonSays)
-	ctx.Handle(click, g.handleClick)
-	ctx.Handle(newGame, g.handleNewGame)
+func (g *ui) OnMount(ctx app.Context) {
+	ctx.Handle(stateChange, g.handleStateChange)
 }
 
-func (g *game) Render() app.UI {
+func (g *ui) Render() app.UI {
 	gameField := app.Div().Class("game-field")
 
 	firstButton := NewButton(0)
@@ -65,8 +55,26 @@ func (g *game) Render() app.UI {
 		fourthButton,
 	)
 
+	// TODO: styling
+	gameStateText := app.Div().Class("game-state").Text(g.Text)
+	newGameButton := app.Button().Class("new-game").Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
+		ctx.NewAction(newGame)
+	})
+	return app.Div().Class("fill", "background").Body(
+		gameField,
+		gameStateText,
+		newGameButton,
+	)
+}
+
+func (b *ui) handleStateChange(ctx app.Context, a app.Action) {
+	state, ok := a.Value.(gameState)
+	if !ok {
+		fmt.Println("wrong type")
+		return
+	}
 	txt := ""
-	switch g.State {
+	switch state {
 	case gameStateNoGame:
 		txt = "Start a New Game"
 	case gameStatePlayerSays:
@@ -78,92 +86,7 @@ func (g *game) Render() app.UI {
 	case gameStateWon:
 		txt = "You Won. Start a New Game"
 	}
-
-	// TODO: styling
-	gameStateText := app.Div().Class("game-state").Text(txt)
-	newGameButton := app.Button().Class("new-game").Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
-		ctx.NewAction(newGame)
+	ctx.Dispatch(func(_ app.Context) {
+		b.Text = txt
 	})
-	return app.Div().Class("fill", "background").Body(
-		gameField,
-		gameStateText,
-		newGameButton,
-	)
-}
-
-func (g *game) simonSays(ctx app.Context, a app.Action) {
-	g.Update()
-	sequence, ok := a.Value.([]int64)
-	if !ok {
-		fmt.Println("wrong type")
-		return
-	}
-	fmt.Println("sequence:", sequence)
-
-	ctx.Async(func() {
-		// TODO: This is so weird. I somehow need to wait before I can do the next
-		//       action, otherwise it just won't update the DOM.
-		<-time.After(200 * time.Millisecond)
-		for _, btnIndex := range sequence {
-			fmt.Println("sending", btnIndex)
-			ctx.NewAction(fmt.Sprintf(playButton, btnIndex))
-			<-time.After(time.Second)
-		}
-	})
-	g.State = gameStatePlayerSays
-	g.Update()
-}
-
-func (g *game) handleNewGame(ctx app.Context, a app.Action) {
-	fmt.Println("New Game")
-	g.clicks = 0
-	// TODO: allow setting difficulty
-	g.sequence = GenerateSequence(4)
-	g.stage = 1
-	g.State = gameStateSimonSays
-	ctx.NewActionWithValue(simonSays, g.sequence[:1])
-}
-
-func (g *game) handleClick(ctx app.Context, a app.Action) {
-	if g.State != gameStatePlayerSays {
-		fmt.Println("no game")
-		return
-	}
-	click, ok := a.Value.(int64)
-	if !ok {
-		fmt.Println("wrong type")
-		return
-	}
-
-	fmt.Println("received click:", click)
-	if g.sequence[g.clicks] != click {
-		g.State = gameStateLost
-		return
-	}
-	g.clicks++
-	if len(g.sequence) == g.clicks {
-		g.State = gameStateWon
-		return
-	}
-	if g.clicks == g.stage {
-		g.clicks = 0
-		g.stage++
-		g.State = gameStateSimonSays
-		ctx.After(1*time.Second, func(ctx app.Context) {
-			ctx.NewActionWithValue(simonSays, g.sequence[:g.stage])
-		})
-	}
-}
-
-func GenerateSequence(l int) []int64 {
-	seq := []int64{}
-	for i := 0; i < l; i++ {
-		n, err := rand.Int(rand.Reader, big.NewInt(4))
-		if err != nil {
-			panic(err)
-		}
-		seq = append(seq, n.Int64())
-
-	}
-	return seq
 }

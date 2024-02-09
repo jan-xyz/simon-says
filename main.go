@@ -12,7 +12,13 @@ func main() {
 	serve := flag.Bool("serve", false, "set to serve instead of generating resources")
 	flag.Parse()
 
-	g := NewGame()
+	l := NewLogic()
+	// TODO: move logic out of the UI thread
+	app.Handle(simonSays, l.simonSays)
+	app.Handle(click, l.handleClick)
+	app.Handle(newGame, l.handleNewGame)
+
+	g := NewUI()
 	app.Route("/", g)
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
