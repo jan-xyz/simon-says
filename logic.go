@@ -33,8 +33,6 @@ func (g *logic) simonSays(ctx app.Context, a app.Action) {
 	fmt.Println("sequence:", sequence)
 
 	go func() {
-		// TODO: This is so weird. I somehow need to wait before I can do the next
-		//       action, otherwise it just won't update the DOM.
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {
 			fmt.Println("sending", btnIndex)

@@ -56,6 +56,9 @@ func (g *ui) Render() app.UI {
 	)
 
 	// TODO: styling
+	if g.Text == "" {
+		g.Text = "Start a New Game"
+	}
 	gameStateText := app.Div().Class("game-state").Text(g.Text)
 	newGameButton := app.Button().Class("new-game").Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
 		ctx.NewAction(newGame)
