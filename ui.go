@@ -41,6 +41,8 @@ func (g *ui) OnMount(ctx app.Context) {
 }
 
 func (g *ui) Render() app.UI {
+	// TODO: make the rendering responsive
+	// TODO: improve overall styling
 	gameField := app.Div().Class("game-field")
 
 	firstButton := NewButton(0)
@@ -55,7 +57,6 @@ func (g *ui) Render() app.UI {
 		fourthButton,
 	)
 
-	// TODO: styling
 	if g.Text == "" {
 		g.Text = "Start a New Game"
 	}

@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 
 	l := NewLogic()
-	// TODO: move logic out of the UI thread
+	// TODO: remove logs everywhere
 	app.Handle(simonSays, l.simonSays)
 	app.Handle(click, l.handleClick)
 	app.Handle(newGame, l.handleNewGame)
