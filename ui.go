@@ -60,7 +60,7 @@ func (g *ui) Render() app.UI {
 		g.Text = "Start a New Game"
 	}
 	gameStateText := app.Div().Class("game-state").Text(g.Text)
-	newGameButton := app.Button().Class("new-game").Text("New Game").OnClick(func(ctx app.Context, _ app.Event) {
+	newGameButton := app.Button().Class("simon-button").Body(app.Span().Text("New Game")).OnClick(func(ctx app.Context, _ app.Event) {
 		ctx.NewAction(newGame)
 	})
 	return app.Div().Class("fill", "background").Body(
