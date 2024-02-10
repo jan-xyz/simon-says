@@ -21,7 +21,7 @@ func NewButton(id int64) *button {
 }
 
 func (b *button) OnMount(ctx app.Context) {
-	ctx.Handle(fmt.Sprintf(playButton, b.id), b.handleActivate)
+	ctx.Handle(fmt.Sprintf(eventPlayButton, b.id), b.handleActivate)
 }
 
 func (b *button) Render() app.UI {
@@ -29,17 +29,25 @@ func (b *button) Render() app.UI {
 		Class("simon-button").
 		Body(app.Span().Text("")).
 		ID("button%d", b.id).
-		OnClick(func(ctx app.Context, _ app.Event) {
-			ctx.NewActionWithValue(click, b.id)
-		})
+		OnClick(b.handleClick)
 	if b.Active {
 		e.Class("active")
 	}
 	return e
 }
 
+func (b *button) handleClick(ctx app.Context, _ app.Event) {
+	// Needs a short delay because it doesn't work if it is done directly on click
+	ctx.After(50*time.Millisecond, func(_ app.Context) {
+		b.Active = true
+		ctx.After(400*time.Millisecond, func(_ app.Context) {
+			b.Active = false
+			ctx.NewActionWithValue(eventClick, b.id)
+		})
+	})
+}
+
 func (b *button) handleActivate(ctx app.Context, a app.Action) {
-	fmt.Println("playing", b.id)
 	ctx.Dispatch(func(_ app.Context) {
 		b.Active = true
 	})

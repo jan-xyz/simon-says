@@ -36,11 +36,11 @@ func (g *logic) simonSays(ctx app.Context, a app.Action) {
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {
 			fmt.Println("sending", btnIndex)
-			ctx.NewAction(fmt.Sprintf(playButton, btnIndex))
+			ctx.NewAction(fmt.Sprintf(eventPlayButton, btnIndex))
 			<-time.After(time.Second)
 		}
 		g.state = gameStatePlayerSays
-		ctx.NewActionWithValue(stateChange, g.state)
+		ctx.NewActionWithValue(eventStateChange, g.state)
 	}()
 }
 
@@ -51,8 +51,8 @@ func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
 	g.sequence = GenerateSequence(4)
 	g.stage = 1
 	g.state = gameStateSimonSays
-	ctx.NewActionWithValue(stateChange, g.state)
-	ctx.NewActionWithValue(simonSays, g.sequence[:1])
+	ctx.NewActionWithValue(eventStateChange, g.state)
+	ctx.NewActionWithValue(eventSimonSays, g.sequence[:1])
 }
 
 func (g *logic) handleClick(ctx app.Context, a app.Action) {
@@ -69,22 +69,22 @@ func (g *logic) handleClick(ctx app.Context, a app.Action) {
 	fmt.Println("received click:", click)
 	if g.sequence[g.clicks] != click {
 		g.state = gameStateLost
-		ctx.NewActionWithValue(stateChange, g.state)
+		ctx.NewActionWithValue(eventStateChange, g.state)
 		return
 	}
 	g.clicks++
 	if len(g.sequence) == g.clicks {
 		g.state = gameStateWon
-		ctx.NewActionWithValue(stateChange, g.state)
+		ctx.NewActionWithValue(eventStateChange, g.state)
 		return
 	}
 	if g.clicks == g.stage {
 		g.clicks = 0
 		g.stage++
 		g.state = gameStateSimonSays
-		ctx.NewActionWithValue(stateChange, g.state)
+		ctx.NewActionWithValue(eventStateChange, g.state)
 		ctx.After(1*time.Second, func(ctx app.Context) {
-			ctx.NewActionWithValue(simonSays, g.sequence[:g.stage])
+			ctx.NewActionWithValue(eventSimonSays, g.sequence[:g.stage])
 		})
 	}
 }

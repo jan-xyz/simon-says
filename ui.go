@@ -9,11 +9,11 @@ import (
 type events = string
 
 const (
-	click       events = "click"
-	simonSays   events = "playSequence"
-	playButton  events = "play%d"
-	newGame     events = "newGame"
-	stateChange events = "stateChange"
+	eventClick       events = "click"
+	eventSimonSays   events = "playSequence"
+	eventPlayButton  events = "play%d"
+	eventNewGame     events = "newGame"
+	eventStateChange events = "stateChange"
 )
 
 type gameState int
@@ -37,7 +37,7 @@ type ui struct {
 }
 
 func (g *ui) OnMount(ctx app.Context) {
-	ctx.Handle(stateChange, g.handleStateChange)
+	ctx.Handle(eventStateChange, g.handleStateChange)
 }
 
 func (g *ui) Render() app.UI {
@@ -62,7 +62,7 @@ func (g *ui) Render() app.UI {
 	}
 	gameStateText := app.Div().Class("game-state").Text(g.Text)
 	newGameButton := app.Button().Class("simon-button").Body(app.Span().Text("New Game")).OnClick(func(ctx app.Context, _ app.Event) {
-		ctx.NewAction(newGame)
+		ctx.NewAction(eventNewGame)
 	})
 	return app.Div().Class("fill", "background").Body(
 		gameField,

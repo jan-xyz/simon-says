@@ -14,9 +14,9 @@ func main() {
 
 	l := NewLogic()
 	// TODO: remove logs everywhere
-	app.Handle(simonSays, l.simonSays)
-	app.Handle(click, l.handleClick)
-	app.Handle(newGame, l.handleNewGame)
+	app.Handle(eventSimonSays, l.simonSays)
+	app.Handle(eventClick, l.handleClick)
+	app.Handle(eventNewGame, l.handleNewGame)
 
 	g := NewUI()
 	app.Route("/", g)
