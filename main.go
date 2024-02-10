@@ -14,6 +14,7 @@ func main() {
 
 	l := NewLogic()
 	// TODO: remove logs everywhere
+	// TODO: add tests
 	app.Handle(eventSimonSays, l.simonSays)
 	app.Handle(eventClick, l.handleClick)
 	app.Handle(eventNewGame, l.handleNewGame)

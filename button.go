@@ -26,7 +26,7 @@ func (b *button) OnMount(ctx app.Context) {
 
 func (b *button) Render() app.UI {
 	e := app.Button().
-		Class("simon-button").
+		Class("simon-button", "game-button").
 		Body(app.Span().Text("")).
 		ID("button%d", b.id).
 		OnClick(b.handleClick)

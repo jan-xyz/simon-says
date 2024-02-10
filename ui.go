@@ -41,8 +41,10 @@ func (g *ui) OnMount(ctx app.Context) {
 }
 
 func (g *ui) Render() app.UI {
-	// TODO: make the rendering responsive
 	// TODO: improve overall styling
+	if g.Text == "" {
+		g.Text = "Start a New Game"
+	}
 	gameField := app.Div().Class("game-field")
 
 	firstButton := NewButton(0)
@@ -50,22 +52,24 @@ func (g *ui) Render() app.UI {
 	thirdButton := NewButton(2)
 	fourthButton := NewButton(3)
 
+	gameStateText := app.Div().Class("game-state").Text(g.Text)
+
 	gameField.Body(
 		firstButton,
 		secondButton,
 		thirdButton,
 		fourthButton,
+		gameStateText,
 	)
 
-	if g.Text == "" {
-		g.Text = "Start a New Game"
-	}
-	gameStateText := app.Div().Class("game-state").Text(g.Text)
-	newGameButton := app.Button().Class("simon-button").Body(app.Span().Text("New Game")).OnClick(func(ctx app.Context, _ app.Event) {
-		ctx.NewAction(eventNewGame)
-	})
+	newGameButton := app.Button().
+		Class("simon-button", "new-game").
+		Body(app.Span().Text("New Game")).
+		OnClick(func(ctx app.Context, _ app.Event) {
+			ctx.NewAction(eventNewGame)
+		})
+
 	return app.Div().Class("fill", "background").Body(
-		gameStateText,
 		newGameButton,
 		gameField,
 	)
