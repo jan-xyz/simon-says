@@ -24,11 +24,19 @@ html, body {
 
 /* Game field */
 .game-field {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  height: 400px;
+  height: 100px;
+  max-width: 400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .game-field {
+    grid-template-columns: repeat(1, 4fr);
+  }
 }
 
 /* button */
