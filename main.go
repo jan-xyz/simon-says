@@ -13,9 +13,15 @@ func main() {
 	flag.Parse()
 
 	l := NewLogic()
+	// TODO: make game settings its own component
+	// TODO: keep scores in local storage
+	// TODO: listen to app updates
+	// TODO: improve overall styling
+	// TODO: Set App icon
 	// TODO: remove logs everywhere
 	// TODO: add tests
-	// TODO: keep scores in local storage
+	// TODO: add dependabot
+	// TODO: add linter
 	app.Handle(eventSimonSays, l.simonSays)
 	app.Handle(eventClick, l.handleClick)
 	app.Handle(eventNewGame, l.handleNewGame)

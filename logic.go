@@ -9,6 +9,33 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
+type (
+	difficulty     int
+	sequenceLength int
+)
+
+const (
+	easy difficulty = iota
+	medium
+	hard
+)
+
+var difficulties = map[difficulty]sequenceLength{
+	easy:   4,
+	medium: 8,
+	hard:   12,
+}
+
+type gameState int
+
+const (
+	gameStateNoGame gameState = iota
+	gameStateSimonSays
+	gameStatePlayerSays
+	gameStateLost
+	gameStateWon
+)
+
 func NewLogic() *logic {
 	return &logic{
 		sequence: []int64{},
@@ -45,10 +72,13 @@ func (g *logic) simonSays(ctx app.Context, a app.Action) {
 }
 
 func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
-	fmt.Println("New Game")
+	d, ok := a.Value.(difficulty)
+	if !ok {
+		fmt.Println("wrong type")
+		return
+	}
 	g.clicks = 0
-	// TODO: allow setting difficulty
-	g.sequence = GenerateSequence(4)
+	g.sequence = GenerateSequence(difficulties[d])
 	g.stage = 1
 	g.state = gameStateSimonSays
 	ctx.NewActionWithValue(eventStateChange, g.state)
@@ -57,7 +87,6 @@ func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
 
 func (g *logic) handleClick(ctx app.Context, a app.Action) {
 	if g.state != gameStatePlayerSays {
-		fmt.Println("no game")
 		return
 	}
 	click, ok := a.Value.(int64)
@@ -89,9 +118,9 @@ func (g *logic) handleClick(ctx app.Context, a app.Action) {
 	}
 }
 
-func GenerateSequence(l int) []int64 {
+func GenerateSequence(l sequenceLength) []int64 {
 	seq := []int64{}
-	for i := 0; i < l; i++ {
+	for i := 0; i < int(l); i++ {
 		n, err := rand.Int(rand.Reader, big.NewInt(4))
 		if err != nil {
 			panic(err)
