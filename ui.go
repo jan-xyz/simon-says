@@ -69,7 +69,7 @@ func (g *ui) Render() app.UI {
 			ctx.NewAction(eventNewGame)
 		})
 
-	return app.Div().Class("fill", "background").Body(
+	return app.Div().Class("fill").Body(
 		newGameButton,
 		gameField,
 	)
