@@ -17,6 +17,54 @@ html, body {
 
 .game-state {
   color: white;
+  margin: 10px auto;
+  align-content: center;
+  max-width: 250px;
+  font-size: 16px;
+}
+
+/* Difficulty */
+.difficulty {
+  background-image: linear-gradient(144deg, rgba(126,126,126,1) 0%, rgba(199,199,199,1) 50%, rgba(84,84,84,1) 100%);
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  display: flex;
+  font-family: Phantomsans, sans-serif;
+  font-size: 12px;
+  justify-content: center;
+  line-height: 1em;
+  max-width: 250px;
+  min-width: 140px;
+  padding: 3px;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  cursor: pointer;
+  margin: 10px auto;
+}
+
+.difficulty label {
+  background-color: rgb(5, 6, 45);
+  padding: 16px 24px;
+  border-radius: 6px;
+  width: 60px;
+  height: 100%;
+  transition: 200ms;
+}
+
+input[name="difficulty-setting"]:checked+label {
+  background: none;
+  color: black;
+}
+
+input[name="difficulty-setting"] {
+  display: none;
 }
 
 /* Game field */

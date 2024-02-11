@@ -48,13 +48,13 @@ func (g *ui) Render() app.UI {
 		secondButton,
 		thirdButton,
 		fourthButton,
-		gameStateText,
 	)
 
 	menu := NewMenu()
 
 	return app.Div().Class("fill").Body(
 		menu,
+		gameStateText,
 		gameField,
 	)
 }
@@ -70,7 +70,7 @@ func (b *ui) handleStateChange(ctx app.Context, a app.Action) {
 	case gameStateNoGame:
 		txt = "Start a New Game"
 	case gameStatePlayerSays:
-		txt = "Your turn"
+		txt = "Repeat what Simon said..."
 	case gameStateSimonSays:
 		txt = "Simon says..."
 	case gameStateLost:

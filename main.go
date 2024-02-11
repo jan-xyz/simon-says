@@ -14,8 +14,8 @@ func main() {
 
 	l := NewLogic()
 	// TODO: keep scores in local storage
+	// TODO: calculate statistics
 	// TODO: listen to app updates
-	// TODO: improve overall styling
 	// TODO: Set App icon
 	// TODO: remove logs everywhere
 	// TODO: add tests
