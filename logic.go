@@ -43,8 +43,6 @@ func NewLogic() *logic {
 }
 
 type logic struct {
-	app.Compo
-
 	sequence []int64
 	clicks   int
 	stage    int

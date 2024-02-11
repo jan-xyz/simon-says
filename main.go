@@ -13,7 +13,6 @@ func main() {
 	flag.Parse()
 
 	l := NewLogic()
-	// TODO: make game settings its own component
 	// TODO: keep scores in local storage
 	// TODO: listen to app updates
 	// TODO: improve overall styling
