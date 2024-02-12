@@ -47,6 +47,9 @@ func main() {
 		Styles: []string{
 			"/web/styles.css",
 		},
+		Icon: app.Icon{
+			Default: "/web/icon.png",
+		},
 	}
 	if !*serve {
 		h.Resources = app.GitHubPages("simon-says")
