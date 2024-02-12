@@ -95,7 +95,7 @@ func (g *logic) handleClick(ctx app.Context, a app.Action) {
 
 	if g.sequence[g.clicks] != click {
 		g.state = gameStateLost
-		ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You Lost in %s mode with %d colors", g.difficulty, g.clicks))
+		ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You Lost in %s mode with %d correct", g.difficulty, g.clicks))
 		return
 	}
 	g.clicks++
