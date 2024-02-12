@@ -13,8 +13,13 @@ func main() {
 	flag.Parse()
 
 	l := NewLogic()
+	// TODO: include mode in win and loss message.
+	// TODO: include how many rounds you made in loss message.
+	// TODO: align font
 	// TODO: keep scores in local storage
+	// TODO: keep last selected mode in local storage
 	// TODO: calculate statistics
+	// TODO: add endless mode with histogram of how waf you got.
 	// TODO: listen to app updates
 	// TODO: Set App icon
 	// TODO: remove logs everywhere
