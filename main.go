@@ -18,9 +18,6 @@ func main() {
 	// TODO: keep last selected mode in local storage
 	// TODO: calculate statistics
 	// TODO: for endless mode add histogram of how far you got.
-	// TODO: listen to app updates
-	// TODO: Set App icon
-	// TODO: remove logs everywhere
 	// TODO: add tests
 	// TODO: add dependabot
 	// TODO: add linter
