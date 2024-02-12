@@ -23,11 +23,18 @@ func NewUI() *ui {
 type ui struct {
 	app.Compo
 
-	Text string
+	Text            string
+	updateAvailable bool
 }
 
 func (g *ui) OnMount(ctx app.Context) {
 	ctx.Handle(EventStateChange, g.handleStateChange)
+}
+
+// OnAppUpdate satisfies the app.AppUpdater interface. It is called when the app
+// is updated in background.
+func (g *ui) OnAppUpdate(ctx app.Context) {
+	g.updateAvailable = ctx.AppUpdateAvailable()
 }
 
 func (g *ui) Render() app.UI {
@@ -56,7 +63,17 @@ func (g *ui) Render() app.UI {
 		menu,
 		gameStateText,
 		gameField,
+		app.If(g.updateAvailable,
+			app.Button().
+				Text("Update!").
+				OnClick(g.onUpdateClick),
+		),
 	)
+}
+
+func (g *ui) onUpdateClick(ctx app.Context, e app.Event) {
+	// Reloads the page to display the modifications.
+	ctx.Reload()
 }
 
 func (b *ui) handleStateChange(ctx app.Context, a app.Action) {
