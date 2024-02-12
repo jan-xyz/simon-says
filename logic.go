@@ -59,7 +59,6 @@ func (g *logic) simonSays(ctx app.Context, a app.Action) {
 	go func() {
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {
-			fmt.Println("sending", btnIndex)
 			ctx.NewAction(fmt.Sprintf(ui.EventPlayButton, btnIndex))
 			<-time.After(time.Second)
 		}
