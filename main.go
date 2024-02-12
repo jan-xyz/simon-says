@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jan-xyz/simon-says/ui"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
@@ -26,11 +27,11 @@ func main() {
 	// TODO: add tests
 	// TODO: add dependabot
 	// TODO: add linter
-	app.Handle(eventSimonSays, l.simonSays)
-	app.Handle(eventClick, l.handleClick)
-	app.Handle(eventNewGame, l.handleNewGame)
+	app.Handle(ui.EventSimonSays, l.simonSays)
+	app.Handle(ui.EventClick, l.handleClick)
+	app.Handle(ui.EventNewGame, l.handleNewGame)
 
-	g := NewUI()
+	g := ui.NewUI()
 	app.Route("/", g)
 
 	// When executed on the client-side, the RunWhenOnBrowser() function

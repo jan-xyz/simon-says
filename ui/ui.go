@@ -1,4 +1,4 @@
-package main
+package ui
 
 import (
 	"fmt"
@@ -9,11 +9,11 @@ import (
 type events = string
 
 const (
-	eventClick       events = "click"
-	eventSimonSays   events = "playSequence"
-	eventPlayButton  events = "play%d"
-	eventNewGame     events = "newGame"
-	eventStateChange events = "stateChange"
+	EventClick       events = "click"
+	EventSimonSays   events = "playSequence"
+	EventPlayButton  events = "play%d"
+	EventNewGame     events = "newGame"
+	EventStateChange events = "stateChange"
 )
 
 func NewUI() *ui {
@@ -27,7 +27,7 @@ type ui struct {
 }
 
 func (g *ui) OnMount(ctx app.Context) {
-	ctx.Handle(eventStateChange, g.handleStateChange)
+	ctx.Handle(EventStateChange, g.handleStateChange)
 }
 
 func (g *ui) Render() app.UI {
@@ -60,23 +60,10 @@ func (g *ui) Render() app.UI {
 }
 
 func (b *ui) handleStateChange(ctx app.Context, a app.Action) {
-	state, ok := a.Value.(gameState)
+	txt, ok := a.Value.(string)
 	if !ok {
 		fmt.Println("wrong type")
 		return
-	}
-	txt := ""
-	switch state {
-	case gameStateNoGame:
-		txt = "Start a New Game"
-	case gameStatePlayerSays:
-		txt = "Repeat what Simon said..."
-	case gameStateSimonSays:
-		txt = "Simon says..."
-	case gameStateLost:
-		txt = "You Lost. Start a New Game"
-	case gameStateWon:
-		txt = "You Won. Start a New Game"
 	}
 	ctx.Dispatch(func(_ app.Context) {
 		b.Text = txt
