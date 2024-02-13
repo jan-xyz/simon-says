@@ -67,7 +67,10 @@ func (g *menu) storeValue(ctx app.Context, _ app.Event) {
 }
 
 func (g *menu) startNewGame(ctx app.Context, _ app.Event) {
-	d := Easy
-	ctx.LocalStorage().Get(localStorageDifficulty, d)
+	var d Difficulty
+	ctx.LocalStorage().Get(localStorageDifficulty, &d)
+	if d == "" {
+		d = Easy
+	}
 	ctx.NewActionWithValue(EventNewGame, d)
 }
