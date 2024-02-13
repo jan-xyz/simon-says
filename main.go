@@ -16,13 +16,11 @@ func main() {
 
 	l := NewLogic()
 	// TODO: keep scores in local storage
-	// TODO: keep last selected mode in local storage
 	// TODO: calculate statistics
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests
 	// TODO: add dependabot
 	// TODO: add linter
-	app.Handle(ui.EventSimonSays, l.simonSays)
 	app.Handle(ui.EventClick, l.handleClick)
 	app.Handle(ui.EventNewGame, l.handleNewGame)
 
