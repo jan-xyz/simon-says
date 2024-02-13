@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/jan-xyz/simon-says/ui"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
@@ -47,6 +48,8 @@ func main() {
 		Icon: app.Icon{
 			Default: "/web/icon.png",
 		},
+		LoadingLabel:       "Loading...",
+		AutoUpdateInterval: 15 * time.Minute,
 	}
 	if !*serve {
 		h.Resources = app.GitHubPages("simon-says")
