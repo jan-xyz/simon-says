@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
+	"reflect"
 	"sync"
 	"time"
 
@@ -21,18 +22,6 @@ const (
 	medium
 	hard
 )
-
-var LocalStorageScores = "scores"
-
-type scores struct {
-	Basic   map[ui.Difficulty]score
-	Endless map[int]int
-}
-
-type score struct {
-	Win  int
-	Loss int
-}
 
 var difficulties = map[ui.Difficulty]int{
 	ui.Easy:   4,
@@ -118,49 +107,50 @@ func (g *logic) lostGame(ctx app.Context) {
 	g.storageMutex.Lock()
 	defer g.storageMutex.Unlock()
 	g.state = gameStateLost
-	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You Lost in %s mode in stage %d. Franzi has a highscore of 21.", g.difficulty, len(g.sequence)))
+	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You lost in %s mode in stage %d. Franzi has a highscore of 21.", g.difficulty, len(g.sequence)))
 
 	// increment losses
-	s := &scores{}
-	ctx.LocalStorage().Get(LocalStorageScores, s)
+	s := &ui.Scores{}
+	ctx.LocalStorage().Get(ui.LocalStorageScores, s)
+	if reflect.DeepEqual(s, &ui.Scores{}) {
+		s = &ui.Scores{Basic: map[ui.Difficulty]ui.Score{
+			ui.Easy:   {},
+			ui.Medium: {},
+			ui.Hard:   {},
+		}, Endless: map[int]int{}}
+	}
 	if g.difficulty != ui.Endless {
-		if f, ok := s.Basic[g.difficulty]; ok {
-			f.Loss++
-			s.Basic[g.difficulty] = f
-		} else {
-			if s.Basic == nil {
-				s.Basic = map[ui.Difficulty]score{}
-			}
-			s.Basic[g.difficulty] = score{Loss: 1}
-		}
+		f := s.Basic[g.difficulty]
+		f.Loss++
+		s.Basic[g.difficulty] = f
 	} else {
-		if s.Endless == nil {
-			s.Endless = map[int]int{}
-		}
 		s.Endless[len(g.sequence)]++
 	}
-	ctx.LocalStorage().Set(LocalStorageScores, s)
+	ctx.LocalStorage().Set(ui.LocalStorageScores, s)
+	ctx.NewActionWithValue(ui.EventScoreUpdate, s)
 }
 
 func (g *logic) wonGame(ctx app.Context) {
 	g.storageMutex.Lock()
 	defer g.storageMutex.Unlock()
 	g.state = gameStateWon
-	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You Won in %s mode. Start a New Game", g.difficulty))
+	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You won in %s mode. Start a New Game", g.difficulty))
 
 	// increment wins
-	s := &scores{}
-	ctx.LocalStorage().Get(LocalStorageScores, s)
-	if f, ok := s.Basic[g.difficulty]; ok {
-		f.Win++
-		s.Basic[g.difficulty] = f
-	} else {
-		if s.Basic == nil {
-			s.Basic = map[ui.Difficulty]score{}
-		}
-		s.Basic[g.difficulty] = score{Win: 1}
+	s := &ui.Scores{}
+	ctx.LocalStorage().Get(ui.LocalStorageScores, s)
+	if reflect.DeepEqual(s, &ui.Scores{}) {
+		s = &ui.Scores{Basic: map[ui.Difficulty]ui.Score{
+			ui.Easy:   {},
+			ui.Medium: {},
+			ui.Hard:   {},
+		}, Endless: map[int]int{}}
 	}
-	ctx.LocalStorage().Set(LocalStorageScores, s)
+	f := s.Basic[g.difficulty]
+	f.Win++
+	s.Basic[g.difficulty] = f
+	ctx.LocalStorage().Set(ui.LocalStorageScores, s)
+	ctx.NewActionWithValue(ui.EventScoreUpdate, s)
 }
 
 func (g *logic) nextRound(ctx app.Context) {

@@ -14,6 +14,7 @@ const (
 	EventPlayButton  events = "play%d"
 	EventNewGame     events = "newGame"
 	EventStateChange events = "stateChange"
+	EventScoreUpdate events = "scoreUpdate"
 )
 
 func NewUI() *ui {
@@ -41,6 +42,8 @@ func (g *ui) Render() app.UI {
 	if g.Text == "" {
 		g.Text = "Start a New Game"
 	}
+	menu := NewMenu()
+	gameStateText := app.Div().Class("game-state").Text(g.Text)
 	gameField := app.Div().Class("game-field")
 
 	firstButton := NewButton(0)
@@ -48,26 +51,25 @@ func (g *ui) Render() app.UI {
 	thirdButton := NewButton(2)
 	fourthButton := NewButton(3)
 
-	gameStateText := app.Div().Class("game-state").Text(g.Text)
+	scores := &scoreBoard{}
 
 	gameField.Body(
 		firstButton,
 		secondButton,
 		thirdButton,
 		fourthButton,
+		scores,
+		app.If(g.updateAvailable,
+			app.Button().Class("simon-button", "update").
+				Body(app.Span().Text("Update!")).
+				OnClick(g.onUpdateClick),
+		),
 	)
 
-	menu := NewMenu()
-
-	return app.Div().Class("fill").Body(
+	return app.Div().Body(
 		menu,
 		gameStateText,
 		gameField,
-		app.If(g.updateAvailable,
-			app.Button().
-				Text("Update!").
-				OnClick(g.onUpdateClick),
-		),
 	)
 }
 

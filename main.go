@@ -15,7 +15,7 @@ func main() {
 	flag.Parse()
 
 	l := NewLogic()
-	// TODO: keep scores in local storage
+	// TODO: abstract storage behind useful API
 	// TODO: calculate statistics
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests
