@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"fmt"
+
 	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -22,7 +24,8 @@ func (g *menu) OnMount(ctx app.Context) {
 func (g *menu) Render() app.UI {
 	modes := []app.UI{}
 	for _, mode := range []storage.Difficulty{storage.Easy, storage.Medium, storage.Hard, storage.Endless} {
-		input := app.Input().Type("radio").Name("difficulty-setting").ID("difficulty%s", mode).Value(mode).OnClick(g.storeValue)
+		id := fmt.Sprintf("difficulty%s", mode)
+		input := app.Input().Type("radio").Name("difficulty-setting").ID(id).Value(mode).OnClick(g.storeValue)
 		label := app.Label().For("difficulty%s", mode).Body(app.Span().Text(mode))
 		if g.selectedDifficulty == mode {
 			input.Checked(true)
