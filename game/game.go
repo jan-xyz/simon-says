@@ -46,7 +46,6 @@ type Game struct {
 }
 
 func (g *Game) simonSays(ctx app.Context, sequence []int64) {
-	fmt.Println(sequence)
 	ctx.Async(func() {
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {

@@ -150,7 +150,8 @@ input[name="difficulty-setting"] {
   transition: 200ms;
 }
 
-.simon-button.active span {
+.simon-button.active span,
+.simon-button:active span {
   background: none;
 }
 

@@ -40,20 +40,11 @@ func (b *button) Render() app.UI {
 }
 
 func (b *button) handleClick(ctx app.Context, _ app.Event) {
-	// Needs a short delay because it doesn't work if it is done directly on click
-	ctx.After(50*time.Millisecond, func(_ app.Context) {
-		b.Active = true
-		ctx.After(400*time.Millisecond, func(_ app.Context) {
-			b.Active = false
-			ctx.NewActionWithValue(EventClick, b.id)
-		})
-	})
+	ctx.NewActionWithValue(EventClick, b.id)
 }
 
 func (b *button) handlePlayButton(ctx app.Context, _ app.Action) {
-	ctx.Dispatch(func(_ app.Context) {
-		b.Active = true
-	})
+	b.Active = true
 	ctx.After(800*time.Millisecond, func(_ app.Context) {
 		ctx.Dispatch(func(_ app.Context) {
 			b.Active = false

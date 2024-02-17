@@ -87,7 +87,5 @@ func (u *UI) handleStateChange(ctx app.Context, a app.Action) {
 		fmt.Println("wrong type")
 		return
 	}
-	ctx.Dispatch(func(_ app.Context) {
-		u.Text = txt
-	})
+	u.Text = txt
 }

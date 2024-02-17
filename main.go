@@ -18,11 +18,10 @@ func main() {
 	flag.Parse()
 
 	l := game.New()
-	// TODO: improve statistics
+	// TODO: improved statistics
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests
 	// TODO: add dependabot
-	// TODO: add linter
 	app.Handle(ui.EventClick, l.HandleClick)
 	app.Handle(ui.EventNewGame, l.HandleNewGame)
 
