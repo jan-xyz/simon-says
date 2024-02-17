@@ -1,3 +1,5 @@
+// Package main is a game of simon-says. It provides a server and client application
+// as well as a static-resource generator for the game.
 package main
 
 import (
@@ -15,7 +17,7 @@ func main() {
 	serve := flag.Bool("serve", false, "set to serve instead of generating resources")
 	flag.Parse()
 
-	l := game.NewLogic()
+	l := game.New()
 	// TODO: improve statistics
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests

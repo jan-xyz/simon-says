@@ -14,21 +14,24 @@ type button struct {
 	Active bool
 }
 
-func NewButton(id int64) *button {
+func newButton(id int64) *button {
 	return &button{
 		id: id,
 	}
 }
 
+// OnMount implements the Mounter interface to run this on mounting the component.
 func (b *button) OnMount(ctx app.Context) {
-	ctx.Handle(fmt.Sprintf(EventPlayButton, b.id), b.handleActivate)
+	ctx.Handle(fmt.Sprintf(EventPlayButton, b.id), b.handlePlayButton)
 }
 
+// Render implements the interface for go-app to render the component.
 func (b *button) Render() app.UI {
+	id := fmt.Sprintf("button%d", b.id)
 	e := app.Button().
 		Class("simon-button", "game-button").
 		Body(app.Span().Text("")).
-		ID("button%d", b.id).
+		ID(id).
 		OnClick(b.handleClick)
 	if b.Active {
 		e.Class("active")
@@ -47,7 +50,7 @@ func (b *button) handleClick(ctx app.Context, _ app.Event) {
 	})
 }
 
-func (b *button) handleActivate(ctx app.Context, a app.Action) {
+func (b *button) handlePlayButton(ctx app.Context, _ app.Action) {
 	ctx.Dispatch(func(_ app.Context) {
 		b.Active = true
 	})

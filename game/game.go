@@ -1,3 +1,5 @@
+// Package game is the main game logic. It implements the simon says parts
+// and the round/stage tracking.
 package game
 
 import (
@@ -28,11 +30,13 @@ const (
 	gameStateWon
 )
 
-func NewLogic() *logic {
-	return &logic{}
+// New is the factory for the Game component.
+func New() *Game {
+	return &Game{}
 }
 
-type logic struct {
+// Game is the main Game component of the game. Create a new instance by
+type Game struct {
 	difficulty   storage.Difficulty
 	sequence     []int64
 	clicks       int
@@ -41,7 +45,7 @@ type logic struct {
 	storageMutex sync.Mutex
 }
 
-func (g *logic) simonSays(ctx app.Context, sequence []int64) {
+func (g *Game) simonSays(ctx app.Context, sequence []int64) {
 	fmt.Println(sequence)
 	ctx.Async(func() {
 		<-time.After(200 * time.Millisecond)
@@ -54,7 +58,8 @@ func (g *logic) simonSays(ctx app.Context, sequence []int64) {
 	})
 }
 
-func (g *logic) HandleNewGame(ctx app.Context, a app.Action) {
+// HandleNewGame is the handler to invoke to start a new game.
+func (g *Game) HandleNewGame(ctx app.Context, a app.Action) {
 	d, ok := a.Value.(storage.Difficulty)
 	if !ok {
 		fmt.Println("wrong type")
@@ -62,14 +67,15 @@ func (g *logic) HandleNewGame(ctx app.Context, a app.Action) {
 	}
 	g.difficulty = d
 	g.clicks = 0
-	g.sequence = []int64{NextNumber()}
+	g.sequence = []int64{nextNumber()}
 	g.stage = 1
 	g.state = gameStateSimonSays
 	ctx.NewActionWithValue(ui.EventStateChange, "Simon says...")
 	g.simonSays(ctx, g.sequence)
 }
 
-func (g *logic) HandleClick(ctx app.Context, a app.Action) {
+// HandleClick is the handler to invoke on user input when it's the user's turn.
+func (g *Game) HandleClick(ctx app.Context, a app.Action) {
 	if g.state != gameStatePlayerSays {
 		return
 	}
@@ -93,7 +99,7 @@ func (g *logic) HandleClick(ctx app.Context, a app.Action) {
 	}
 }
 
-func (g *logic) lostGame(ctx app.Context) {
+func (g *Game) lostGame(ctx app.Context) {
 	g.storageMutex.Lock()
 	defer g.storageMutex.Unlock()
 	g.state = gameStateLost
@@ -114,7 +120,7 @@ func (g *logic) lostGame(ctx app.Context) {
 	}
 }
 
-func (g *logic) wonGame(ctx app.Context) {
+func (g *Game) wonGame(ctx app.Context) {
 	g.storageMutex.Lock()
 	defer g.storageMutex.Unlock()
 	g.state = gameStateWon
@@ -133,18 +139,18 @@ func (g *logic) wonGame(ctx app.Context) {
 	}
 }
 
-func (g *logic) nextRound(ctx app.Context) {
+func (g *Game) nextRound(ctx app.Context) {
 	g.clicks = 0
 	g.stage++
 	g.state = gameStateSimonSays
-	g.sequence = append(g.sequence, NextNumber())
+	g.sequence = append(g.sequence, nextNumber())
 	ctx.NewActionWithValue(ui.EventStateChange, "Simon says...")
 	ctx.After(1*time.Second, func(ctx app.Context) {
 		g.simonSays(ctx, g.sequence)
 	})
 }
 
-func NextNumber() int64 {
+func nextNumber() int64 {
 	n, err := rand.Int(rand.Reader, big.NewInt(4))
 	if err != nil {
 		panic(err)

@@ -25,7 +25,7 @@ func TestComponentLifcycle(t *testing.T) {
 					Path: app.TestPath(0, 0),
 					Expected: app.Button().
 						Class("simon-button", "new-game").
-						OnClick(func(ctx app.Context, e app.Event) {}),
+						OnClick(func(_ app.Context, _ app.Event) {}),
 				},
 				{
 					Path: app.TestPath(0, 0, 0),
@@ -45,7 +45,7 @@ func TestComponentLifcycle(t *testing.T) {
 						ID("difficultyeasy").
 						Value("easy").
 						Checked(true).
-						OnClick(func(ctx app.Context, e app.Event) {}),
+						OnClick(func(_ app.Context, _ app.Event) {}),
 				},
 				{
 					Path: app.TestPath(0, 1, 1),
@@ -59,7 +59,7 @@ func TestComponentLifcycle(t *testing.T) {
 						Name("difficulty-setting").
 						ID("difficultymedium").
 						Value("medium").
-						OnClick(func(ctx app.Context, e app.Event) {}),
+						OnClick(func(_ app.Context, _ app.Event) {}),
 				},
 				{
 					Path: app.TestPath(0, 1, 3),
@@ -73,7 +73,7 @@ func TestComponentLifcycle(t *testing.T) {
 						Name("difficulty-setting").
 						ID("difficultyhard").
 						Value("hard").
-						OnClick(func(ctx app.Context, e app.Event) {}),
+						OnClick(func(_ app.Context, _ app.Event) {}),
 				},
 				{
 					Path: app.TestPath(0, 1, 5),
@@ -87,7 +87,7 @@ func TestComponentLifcycle(t *testing.T) {
 						Name("difficulty-setting").
 						ID("difficultyendless").
 						Value("endless").
-						OnClick(func(ctx app.Context, e app.Event) {}),
+						OnClick(func(_ app.Context, _ app.Event) {}),
 				},
 				{
 					Path: app.TestPath(0, 1, 7),
@@ -100,7 +100,7 @@ func TestComponentLifcycle(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
-			compo := NewMenu()
+			compo := &menu{}
 
 			disp := app.NewClientTester(compo)
 			defer disp.Close()

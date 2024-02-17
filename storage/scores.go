@@ -1,3 +1,5 @@
+// Package storage is a library to make interfacing with the web storage simpler
+// and provide a unified way to deal with it.
 package storage
 
 import (
@@ -9,13 +11,16 @@ const EventScoreUpdate = "scoreUpdate"
 
 const localStorageScores = "scores"
 
+// Scores is the representation of scores for ranking and statistics
 type Scores struct {
 	Basic   map[Difficulty]Score
 	Endless map[int]int
 }
 
+// Difficulty represents the games difficulty for the statistics.
 type Difficulty string
 
+// List of possible difficulties.
 const (
 	Easy    Difficulty = "easy"
 	Medium  Difficulty = "medium"
@@ -23,6 +28,8 @@ const (
 	Endless Difficulty = "endless"
 )
 
+// Score is the individual scores for the basic difficulties. Endless doesn't have Wins that
+// is why it isn't tracked with Win/Loss Scores.
 type Score struct {
 	Win  int
 	Loss int
@@ -36,19 +43,22 @@ func newScores() Scores {
 	}, Endless: map[int]int{}}
 }
 
+// IncrementEasyLoss increments the losses for an easy game.
 func IncrementEasyLoss(ctx app.Context) {
-	IncrementLoss(ctx, Easy)
+	incrementLoss(ctx, Easy)
 }
 
+// IncrementMediumLoss increments the losses for a medium game.
 func IncrementMediumLoss(ctx app.Context) {
-	IncrementLoss(ctx, Medium)
+	incrementLoss(ctx, Medium)
 }
 
+// IncrementHardLoss increments the losses for a hard game.
 func IncrementHardLoss(ctx app.Context) {
-	IncrementLoss(ctx, Hard)
+	incrementLoss(ctx, Hard)
 }
 
-func IncrementLoss(ctx app.Context, d Difficulty) {
+func incrementLoss(ctx app.Context, d Difficulty) {
 	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
 	if d != Endless {
@@ -60,6 +70,7 @@ func IncrementLoss(ctx app.Context, d Difficulty) {
 	ctx.NewActionWithValue(EventScoreUpdate, s)
 }
 
+// UpdateEndless tracks the score for an endless game.
 func UpdateEndless(ctx app.Context, stage int) {
 	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
@@ -68,19 +79,22 @@ func UpdateEndless(ctx app.Context, stage int) {
 	ctx.NewActionWithValue(EventScoreUpdate, s)
 }
 
+// IncrementEasyWin increments the win for an easy game.
 func IncrementEasyWin(ctx app.Context) {
-	IncrementWin(ctx, Easy)
+	incrementWin(ctx, Easy)
 }
 
+// IncrementMediumWin incremens the win for a medium game.
 func IncrementMediumWin(ctx app.Context) {
-	IncrementWin(ctx, Medium)
+	incrementWin(ctx, Medium)
 }
 
+// IncrementHardWin increments the win for a hard game.
 func IncrementHardWin(ctx app.Context) {
-	IncrementWin(ctx, Hard)
+	incrementWin(ctx, Hard)
 }
 
-func IncrementWin(ctx app.Context, d Difficulty) {
+func incrementWin(ctx app.Context, d Difficulty) {
 	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
 	f := s.Basic[d]
@@ -90,6 +104,7 @@ func IncrementWin(ctx app.Context, d Difficulty) {
 	ctx.NewActionWithValue(EventScoreUpdate, s)
 }
 
+// LoadScores returns the currently stored Scores.
 func LoadScores(ctx app.Context) Scores {
 	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)

@@ -1,3 +1,4 @@
+// Package ui is the package for the main UI of the simon-says game.
 package ui
 
 import (
@@ -6,49 +7,52 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
-type events = string
-
+// all possible Events to communicate between components.
 const (
-	EventClick       events = "click"
-	EventSimonSays   events = "playSequence"
-	EventPlayButton  events = "play%d"
-	EventNewGame     events = "newGame"
-	EventStateChange events = "stateChange"
+	EventClick       = "click"
+	EventSimonSays   = "playSequence"
+	EventPlayButton  = "play%d"
+	EventNewGame     = "newGame"
+	EventStateChange = "stateChange"
 )
 
-func NewUI() *ui {
-	return &ui{}
+// NewUI is the factory for the main UI component.
+func NewUI() *UI {
+	return &UI{}
 }
 
-type ui struct {
+// UI is the main UI component of the game.
+type UI struct {
 	app.Compo
 
 	Text            string
 	updateAvailable bool
 }
 
-func (g *ui) OnMount(ctx app.Context) {
-	ctx.Handle(EventStateChange, g.handleStateChange)
+// OnMount implements the Mounter interface to run this on mounting the component.
+func (u *UI) OnMount(ctx app.Context) {
+	ctx.Handle(EventStateChange, u.handleStateChange)
 }
 
 // OnAppUpdate satisfies the app.AppUpdater interface. It is called when the app
 // is updated in background.
-func (g *ui) OnAppUpdate(ctx app.Context) {
-	g.updateAvailable = ctx.AppUpdateAvailable()
+func (u *UI) OnAppUpdate(ctx app.Context) {
+	u.updateAvailable = ctx.AppUpdateAvailable()
 }
 
-func (g *ui) Render() app.UI {
-	if g.Text == "" {
-		g.Text = "Start a New Game"
+// Render implements the interface for go-app to render the component.
+func (u *UI) Render() app.UI {
+	if u.Text == "" {
+		u.Text = "Start a New Game"
 	}
-	menu := NewMenu()
-	gameStateText := app.Div().Class("game-state").Text(g.Text)
+	menu := &menu{}
+	gameStateText := app.Div().Class("game-state").Text(u.Text)
 	gameField := app.Div().Class("game-field")
 
-	firstButton := NewButton(0)
-	secondButton := NewButton(1)
-	thirdButton := NewButton(2)
-	fourthButton := NewButton(3)
+	firstButton := newButton(0)
+	secondButton := newButton(1)
+	thirdButton := newButton(2)
+	fourthButton := newButton(3)
 
 	scores := &scoreBoard{}
 
@@ -58,10 +62,10 @@ func (g *ui) Render() app.UI {
 		thirdButton,
 		fourthButton,
 		scores,
-		app.If(g.updateAvailable,
+		app.If(u.updateAvailable,
 			app.Button().Class("simon-button", "update").
 				Body(app.Span().Text("Update!")).
-				OnClick(g.onUpdateClick),
+				OnClick(u.onUpdateClick),
 		),
 	)
 
@@ -72,18 +76,18 @@ func (g *ui) Render() app.UI {
 	)
 }
 
-func (g *ui) onUpdateClick(ctx app.Context, e app.Event) {
+func (u *UI) onUpdateClick(ctx app.Context, _ app.Event) {
 	// Reloads the page to display the modifications.
 	ctx.Reload()
 }
 
-func (b *ui) handleStateChange(ctx app.Context, a app.Action) {
+func (u *UI) handleStateChange(ctx app.Context, a app.Action) {
 	txt, ok := a.Value.(string)
 	if !ok {
 		fmt.Println("wrong type")
 		return
 	}
 	ctx.Dispatch(func(_ app.Context) {
-		b.Text = txt
+		u.Text = txt
 	})
 }

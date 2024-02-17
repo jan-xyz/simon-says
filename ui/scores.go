@@ -17,16 +17,17 @@ type scoreBoard struct {
 	endlessHighscore int
 }
 
-func (g *scoreBoard) OnMount(ctx app.Context) {
-	ctx.Handle(storage.EventScoreUpdate, g.HandleScoreUpdate)
+// OnMount implements the Mounter interface to run this on mounting the component.
+func (b *scoreBoard) OnMount(ctx app.Context) {
+	ctx.Handle(storage.EventScoreUpdate, b.HandleScoreUpdate)
 	s := storage.LoadScores(ctx)
-	g.storeScores(s)
+	b.storeScores(s)
 }
 
-func (g *scoreBoard) storeScores(s storage.Scores) {
-	g.easyWinRatio = float64(s.Basic[storage.Easy].Win) / float64(s.Basic[storage.Easy].Win+s.Basic[storage.Easy].Loss)
-	g.mediumWinRatio = float64(s.Basic[storage.Medium].Win) / float64(s.Basic[storage.Medium].Win+s.Basic[storage.Medium].Loss)
-	g.hardWinRatio = float64(s.Basic[storage.Hard].Win) / float64(s.Basic[storage.Hard].Win+s.Basic[storage.Hard].Loss)
+func (b *scoreBoard) storeScores(s storage.Scores) {
+	b.easyWinRatio = float64(s.Basic[storage.Easy].Win) / float64(s.Basic[storage.Easy].Win+s.Basic[storage.Easy].Loss)
+	b.mediumWinRatio = float64(s.Basic[storage.Medium].Win) / float64(s.Basic[storage.Medium].Win+s.Basic[storage.Medium].Loss)
+	b.hardWinRatio = float64(s.Basic[storage.Hard].Win) / float64(s.Basic[storage.Hard].Win+s.Basic[storage.Hard].Loss)
 
 	max := 0
 	for score := range s.Endless {
@@ -34,36 +35,37 @@ func (g *scoreBoard) storeScores(s storage.Scores) {
 			max = score
 		}
 	}
-	g.endlessHighscore = max
+	b.endlessHighscore = max
 }
 
-func (s *scoreBoard) Render() app.UI {
+// Render implements the interface for go-app to render the component.
+func (b *scoreBoard) Render() app.UI {
 	easyText := "no game yet"
-	if !math.IsNaN(s.easyWinRatio) {
-		easyText = fmt.Sprintf("%.1f%%", s.easyWinRatio*100)
+	if !math.IsNaN(b.easyWinRatio) {
+		easyText = fmt.Sprintf("%.1f%%", b.easyWinRatio*100)
 	}
 	mediumText := "no game yet"
-	if !math.IsNaN(s.mediumWinRatio) {
-		mediumText = fmt.Sprintf("%.1f%%", s.mediumWinRatio*100)
+	if !math.IsNaN(b.mediumWinRatio) {
+		mediumText = fmt.Sprintf("%.1f%%", b.mediumWinRatio*100)
 	}
 	hardText := "no game yet"
-	if !math.IsNaN(s.hardWinRatio) {
-		hardText = fmt.Sprintf("%.1f%%", s.hardWinRatio*100)
+	if !math.IsNaN(b.hardWinRatio) {
+		hardText = fmt.Sprintf("%.1f%%", b.hardWinRatio*100)
 	}
 
 	return app.Table().Class("scores").Body(
 		app.Tr().Body(app.Td().Text("Easy"), app.Td().Text(easyText)),
 		app.Tr().Body(app.Td().Text("Medium"), app.Td().Text(mediumText)),
 		app.Tr().Body(app.Td().Text("Hard"), app.Td().Text(hardText)),
-		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(s.endlessHighscore)),
+		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(b.endlessHighscore)),
 	)
 }
 
-func (s *scoreBoard) HandleScoreUpdate(ctx app.Context, a app.Action) {
+func (b *scoreBoard) HandleScoreUpdate(_ app.Context, a app.Action) {
 	scores, ok := a.Value.(storage.Scores)
 	if !ok {
 		fmt.Println("wrong type")
 		return
 	}
-	s.storeScores(scores)
+	b.storeScores(scores)
 }

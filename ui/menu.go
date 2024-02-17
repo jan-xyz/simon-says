@@ -12,15 +12,13 @@ type menu struct {
 	selectedDifficulty storage.Difficulty
 }
 
-func NewMenu() *menu {
-	return &menu{}
-}
-
+// OnMount implements the Mounter interface to run this on mounting the component.
 func (g *menu) OnMount(ctx app.Context) {
 	d := storage.LoadDifficulty(ctx)
 	g.selectedDifficulty = d
 }
 
+// Render implements the interface for go-app to render the component.
 func (g *menu) Render() app.UI {
 	modes := []app.UI{}
 	for _, mode := range []storage.Difficulty{storage.Easy, storage.Medium, storage.Hard, storage.Endless} {
