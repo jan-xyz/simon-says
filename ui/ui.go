@@ -14,7 +14,6 @@ const (
 	EventPlayButton  events = "play%d"
 	EventNewGame     events = "newGame"
 	EventStateChange events = "stateChange"
-	EventScoreUpdate events = "scoreUpdate"
 )
 
 func NewUI() *ui {

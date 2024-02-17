@@ -4,10 +4,10 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
-	"reflect"
 	"sync"
 	"time"
 
+	"github.com/jan-xyz/simon-says/storage"
 	"github.com/jan-xyz/simon-says/ui"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -110,24 +110,18 @@ func (g *logic) lostGame(ctx app.Context) {
 	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You lost in %s mode in stage %d. Franzi has a highscore of 21.", g.difficulty, len(g.sequence)))
 
 	// increment losses
-	s := &ui.Scores{}
-	ctx.LocalStorage().Get(ui.LocalStorageScores, s)
-	if reflect.DeepEqual(s, &ui.Scores{}) {
-		s = &ui.Scores{Basic: map[ui.Difficulty]ui.Score{
-			ui.Easy:   {},
-			ui.Medium: {},
-			ui.Hard:   {},
-		}, Endless: map[int]int{}}
+	switch g.difficulty {
+	case ui.Easy:
+		storage.IncrementEasyLoss(ctx)
+	case ui.Medium:
+		storage.IncrementMediumLoss(ctx)
+	case ui.Hard:
+		storage.IncrementHardLoss(ctx)
+	case ui.Endless:
+		storage.UpdateEndless(ctx, len(g.sequence))
+	default:
+		app.Log("Difficulty not supported")
 	}
-	if g.difficulty != ui.Endless {
-		f := s.Basic[g.difficulty]
-		f.Loss++
-		s.Basic[g.difficulty] = f
-	} else {
-		s.Endless[len(g.sequence)]++
-	}
-	ctx.LocalStorage().Set(ui.LocalStorageScores, s)
-	ctx.NewActionWithValue(ui.EventScoreUpdate, s)
 }
 
 func (g *logic) wonGame(ctx app.Context) {
@@ -137,20 +131,16 @@ func (g *logic) wonGame(ctx app.Context) {
 	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You won in %s mode. Start a New Game", g.difficulty))
 
 	// increment wins
-	s := &ui.Scores{}
-	ctx.LocalStorage().Get(ui.LocalStorageScores, s)
-	if reflect.DeepEqual(s, &ui.Scores{}) {
-		s = &ui.Scores{Basic: map[ui.Difficulty]ui.Score{
-			ui.Easy:   {},
-			ui.Medium: {},
-			ui.Hard:   {},
-		}, Endless: map[int]int{}}
+	switch g.difficulty {
+	case ui.Easy:
+		storage.IncrementEasyWin(ctx)
+	case ui.Medium:
+		storage.IncrementMediumWin(ctx)
+	case ui.Hard:
+		storage.IncrementHardWin(ctx)
+	default:
+		app.Log("Difficulty not supported")
 	}
-	f := s.Basic[g.difficulty]
-	f.Win++
-	s.Basic[g.difficulty] = f
-	ctx.LocalStorage().Set(ui.LocalStorageScores, s)
-	ctx.NewActionWithValue(ui.EventScoreUpdate, s)
 }
 
 func (g *logic) nextRound(ctx app.Context) {

@@ -3,22 +3,10 @@ package ui
 import (
 	"fmt"
 	"math"
-	"reflect"
 
+	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
-
-var LocalStorageScores = "scores"
-
-type Scores struct {
-	Basic   map[Difficulty]Score
-	Endless map[int]int
-}
-
-type Score struct {
-	Win  int
-	Loss int
-}
 
 type scoreBoard struct {
 	app.Compo
@@ -30,24 +18,15 @@ type scoreBoard struct {
 }
 
 func (g *scoreBoard) OnMount(ctx app.Context) {
-	ctx.Handle(EventScoreUpdate, g.HandleScoreUpdate)
-	s := &Scores{}
-	ctx.LocalStorage().Get(LocalStorageScores, s)
-	if reflect.DeepEqual(s, &Scores{}) {
-		s = &Scores{Basic: map[Difficulty]Score{
-			Easy:   {},
-			Medium: {},
-			Hard:   {},
-		}, Endless: map[int]int{}}
-	}
-
+	ctx.Handle(storage.EventScoreUpdate, g.HandleScoreUpdate)
+	s := storage.LoadScores(ctx)
 	g.storeScores(s)
 }
 
-func (g *scoreBoard) storeScores(s *Scores) {
-	g.easyWinRatio = float64(s.Basic[Easy].Win) / float64(s.Basic[Easy].Win+s.Basic[Easy].Loss)
-	g.mediumWinRatio = float64(s.Basic[Medium].Win) / float64(s.Basic[Medium].Win+s.Basic[Medium].Loss)
-	g.hardWinRatio = float64(s.Basic[Hard].Win) / float64(s.Basic[Hard].Win+s.Basic[Hard].Loss)
+func (g *scoreBoard) storeScores(s storage.Scores) {
+	g.easyWinRatio = float64(s.Basic[storage.Easy].Win) / float64(s.Basic[storage.Easy].Win+s.Basic[storage.Easy].Loss)
+	g.mediumWinRatio = float64(s.Basic[storage.Medium].Win) / float64(s.Basic[storage.Medium].Win+s.Basic[storage.Medium].Loss)
+	g.hardWinRatio = float64(s.Basic[storage.Hard].Win) / float64(s.Basic[storage.Hard].Win+s.Basic[storage.Hard].Loss)
 
 	max := 0
 	for score := range s.Endless {
@@ -81,7 +60,7 @@ func (s *scoreBoard) Render() app.UI {
 }
 
 func (s *scoreBoard) HandleScoreUpdate(ctx app.Context, a app.Action) {
-	scores, ok := a.Value.(*Scores)
+	scores, ok := a.Value.(storage.Scores)
 	if !ok {
 		fmt.Println("wrong type")
 		return
