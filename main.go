@@ -44,7 +44,10 @@ func main() {
 			"/web/styles.css",
 		},
 		Icon: app.Icon{
-			Default: "/web/icon.png",
+			Default:    "/web/icon.png",
+			Large:      "/web/icon.png",
+			SVG:        "/web/icon.svg",
+			AppleTouch: "/web/icon.png",
 		},
 		LoadingLabel:       "Loading...",
 		AutoUpdateInterval: 15 * time.Minute,

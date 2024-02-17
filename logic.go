@@ -23,10 +23,10 @@ const (
 	hard
 )
 
-var difficulties = map[ui.Difficulty]int{
-	ui.Easy:   4,
-	ui.Medium: 8,
-	ui.Hard:   12,
+var difficulties = map[storage.Difficulty]int{
+	storage.Easy:   4,
+	storage.Medium: 8,
+	storage.Hard:   12,
 }
 
 type gameState int
@@ -44,7 +44,7 @@ func NewLogic() *logic {
 }
 
 type logic struct {
-	difficulty   ui.Difficulty
+	difficulty   storage.Difficulty
 	sequence     []int64
 	clicks       int
 	stage        int
@@ -65,7 +65,7 @@ func (g *logic) simonSays(ctx app.Context, sequence []int64) {
 }
 
 func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
-	d, ok := a.Value.(ui.Difficulty)
+	d, ok := a.Value.(storage.Difficulty)
 	if !ok {
 		fmt.Println("wrong type")
 		return
@@ -94,7 +94,7 @@ func (g *logic) handleClick(ctx app.Context, a app.Action) {
 		return
 	}
 	g.clicks++
-	if g.difficulty != ui.Endless && difficulties[g.difficulty] == g.clicks {
+	if g.difficulty != storage.Endless && difficulties[g.difficulty] == g.clicks {
 		g.wonGame(ctx)
 		return
 	}
@@ -111,13 +111,13 @@ func (g *logic) lostGame(ctx app.Context) {
 
 	// increment losses
 	switch g.difficulty {
-	case ui.Easy:
+	case storage.Easy:
 		storage.IncrementEasyLoss(ctx)
-	case ui.Medium:
+	case storage.Medium:
 		storage.IncrementMediumLoss(ctx)
-	case ui.Hard:
+	case storage.Hard:
 		storage.IncrementHardLoss(ctx)
-	case ui.Endless:
+	case storage.Endless:
 		storage.UpdateEndless(ctx, len(g.sequence))
 	default:
 		app.Log("Difficulty not supported")
@@ -132,11 +132,11 @@ func (g *logic) wonGame(ctx app.Context) {
 
 	// increment wins
 	switch g.difficulty {
-	case ui.Easy:
+	case storage.Easy:
 		storage.IncrementEasyWin(ctx)
-	case ui.Medium:
+	case storage.Medium:
 		storage.IncrementMediumWin(ctx)
-	case ui.Hard:
+	case storage.Hard:
 		storage.IncrementHardWin(ctx)
 	default:
 		app.Log("Difficulty not supported")

@@ -7,9 +7,9 @@ import (
 )
 
 // EventScoreUpdate is fired when a score is updated.
-var EventScoreUpdate = "scoreUpdate"
+const EventScoreUpdate = "scoreUpdate"
 
-var localStorageScores = "scores"
+const localStorageScores = "scores"
 
 type Scores struct {
 	Basic   map[Difficulty]Score

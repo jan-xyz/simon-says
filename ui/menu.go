@@ -1,27 +1,13 @@
 package ui
 
 import (
+	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
-)
-
-type (
-	Difficulty string
-)
-
-const (
-	Easy    Difficulty = "easy"
-	Medium  Difficulty = "medium"
-	Hard    Difficulty = "hard"
-	Endless Difficulty = "endless"
-)
-
-const (
-	localStorageDifficulty = "difficulty"
 )
 
 type menu struct {
 	app.Compo
-	selectedDifficulty Difficulty
+	selectedDifficulty storage.Difficulty
 }
 
 func NewMenu() *menu {
@@ -29,19 +15,15 @@ func NewMenu() *menu {
 }
 
 func (g *menu) OnMount(ctx app.Context) {
-	var d Difficulty
-	ctx.LocalStorage().Get(localStorageDifficulty, &d)
-	if d == "" {
-		d = Easy
-	}
+	d := storage.LoadDifficulty(ctx)
 	g.selectedDifficulty = d
 }
 
 func (g *menu) Render() app.UI {
 	modes := []app.UI{}
-	for _, mode := range []Difficulty{Easy, Medium, Hard, Endless} {
-		input := app.Input().Type("radio").Name("difficulty-setting").ID("difficulty%d", mode).Value(mode).OnClick(g.storeValue)
-		label := app.Label().For("difficulty%d", mode).Body(app.Span().Text(mode))
+	for _, mode := range []storage.Difficulty{storage.Easy, storage.Medium, storage.Hard, storage.Endless} {
+		input := app.Input().Type("radio").Name("difficulty-setting").ID("difficulty%s", mode).Value(mode).OnClick(g.storeValue)
+		label := app.Label().For("difficulty%s", mode).Body(app.Span().Text(mode))
 		if g.selectedDifficulty == mode {
 			input.Checked(true)
 		}
@@ -62,15 +44,10 @@ func (g *menu) Render() app.UI {
 
 func (g *menu) storeValue(ctx app.Context, _ app.Event) {
 	val := ctx.JSSrc().Get("value").String()
-	ctx.LocalStorage().Set(localStorageDifficulty, val)
-	g.selectedDifficulty = Difficulty(val)
+	d := storage.SetDifficulty(ctx, val)
+	g.selectedDifficulty = d
 }
 
 func (g *menu) startNewGame(ctx app.Context, _ app.Event) {
-	var d Difficulty
-	ctx.LocalStorage().Get(localStorageDifficulty, &d)
-	if d == "" {
-		d = Easy
-	}
-	ctx.NewActionWithValue(EventNewGame, d)
+	ctx.NewActionWithValue(EventNewGame, g.selectedDifficulty)
 }
