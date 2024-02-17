@@ -12,17 +12,6 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
-type (
-	difficulty     int
-	sequenceLength int
-)
-
-const (
-	easy difficulty = iota
-	medium
-	hard
-)
-
 var difficulties = map[storage.Difficulty]int{
 	storage.Easy:   4,
 	storage.Medium: 8,
