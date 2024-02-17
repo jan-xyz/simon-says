@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jan-xyz/simon-says/game"
 	"github.com/jan-xyz/simon-says/ui"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -14,15 +15,15 @@ func main() {
 	serve := flag.Bool("serve", false, "set to serve instead of generating resources")
 	flag.Parse()
 
-	l := NewLogic()
+	l := game.NewLogic()
 	// TODO: abstract storage behind useful API
 	// TODO: calculate statistics
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests
 	// TODO: add dependabot
 	// TODO: add linter
-	app.Handle(ui.EventClick, l.handleClick)
-	app.Handle(ui.EventNewGame, l.handleNewGame)
+	app.Handle(ui.EventClick, l.HandleClick)
+	app.Handle(ui.EventNewGame, l.HandleNewGame)
 
 	g := ui.NewUI()
 	app.Route("/", g)

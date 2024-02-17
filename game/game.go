@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"crypto/rand"
@@ -53,7 +53,8 @@ type logic struct {
 }
 
 func (g *logic) simonSays(ctx app.Context, sequence []int64) {
-	go func() {
+	fmt.Println(sequence)
+	ctx.Async(func() {
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {
 			ctx.NewAction(fmt.Sprintf(ui.EventPlayButton, btnIndex))
@@ -61,10 +62,10 @@ func (g *logic) simonSays(ctx app.Context, sequence []int64) {
 		}
 		g.state = gameStatePlayerSays
 		ctx.NewActionWithValue(ui.EventStateChange, "Repeat what Simon said...")
-	}()
+	})
 }
 
-func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
+func (g *logic) HandleNewGame(ctx app.Context, a app.Action) {
 	d, ok := a.Value.(storage.Difficulty)
 	if !ok {
 		fmt.Println("wrong type")
@@ -79,7 +80,7 @@ func (g *logic) handleNewGame(ctx app.Context, a app.Action) {
 	g.simonSays(ctx, g.sequence)
 }
 
-func (g *logic) handleClick(ctx app.Context, a app.Action) {
+func (g *logic) HandleClick(ctx app.Context, a app.Action) {
 	if g.state != gameStatePlayerSays {
 		return
 	}

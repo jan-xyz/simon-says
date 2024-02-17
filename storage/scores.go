@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"reflect"
-
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
@@ -30,6 +28,14 @@ type Score struct {
 	Loss int
 }
 
+func newScores() Scores {
+	return Scores{Basic: map[Difficulty]Score{
+		Easy:   {},
+		Medium: {},
+		Hard:   {},
+	}, Endless: map[int]int{}}
+}
+
 func IncrementEasyLoss(ctx app.Context) {
 	IncrementLoss(ctx, Easy)
 }
@@ -43,15 +49,8 @@ func IncrementHardLoss(ctx app.Context) {
 }
 
 func IncrementLoss(ctx app.Context, d Difficulty) {
-	s := Scores{}
+	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
-	if reflect.DeepEqual(s, &Scores{}) {
-		s = Scores{Basic: map[Difficulty]Score{
-			Easy:   {},
-			Medium: {},
-			Hard:   {},
-		}, Endless: map[int]int{}}
-	}
 	if d != Endless {
 		f := s.Basic[d]
 		f.Loss++
@@ -62,15 +61,8 @@ func IncrementLoss(ctx app.Context, d Difficulty) {
 }
 
 func UpdateEndless(ctx app.Context, stage int) {
-	s := Scores{}
+	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
-	if reflect.DeepEqual(s, &Scores{}) {
-		s = Scores{Basic: map[Difficulty]Score{
-			Easy:   {},
-			Medium: {},
-			Hard:   {},
-		}, Endless: map[int]int{}}
-	}
 	s.Endless[stage]++
 	ctx.LocalStorage().Set(localStorageScores, s)
 	ctx.NewActionWithValue(EventScoreUpdate, s)
@@ -89,15 +81,8 @@ func IncrementHardWin(ctx app.Context) {
 }
 
 func IncrementWin(ctx app.Context, d Difficulty) {
-	s := Scores{}
+	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
-	if reflect.DeepEqual(s, &Scores{}) {
-		s = Scores{Basic: map[Difficulty]Score{
-			Easy:   {},
-			Medium: {},
-			Hard:   {},
-		}, Endless: map[int]int{}}
-	}
 	f := s.Basic[d]
 	f.Win++
 	s.Basic[d] = f
@@ -106,14 +91,7 @@ func IncrementWin(ctx app.Context, d Difficulty) {
 }
 
 func LoadScores(ctx app.Context) Scores {
-	s := Scores{}
+	s := newScores()
 	ctx.LocalStorage().Get(localStorageScores, &s)
-	if reflect.DeepEqual(s, &Scores{}) {
-		s = Scores{Basic: map[Difficulty]Score{
-			Easy:   {},
-			Medium: {},
-			Hard:   {},
-		}, Endless: map[int]int{}}
-	}
 	return s
 }
