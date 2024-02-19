@@ -22,7 +22,8 @@ func newButton(id int64) *button {
 
 // OnMount implements the Mounter interface to run this on mounting the component.
 func (b *button) OnMount(ctx app.Context) {
-	ctx.Handle(fmt.Sprintf(EventPlayButton, b.id), b.handlePlayButton)
+	eventName := fmt.Sprintf(EventPlayButton, b.id)
+	ctx.Handle(eventName, b.handlePlayButton)
 }
 
 // Render implements the interface for go-app to render the component.
@@ -51,9 +52,14 @@ func (b *button) handleClick(ctx app.Context, _ app.Event) {
 	})
 }
 
-func (b *button) handlePlayButton(ctx app.Context, _ app.Action) {
+func (b *button) handlePlayButton(ctx app.Context, a app.Action) {
+	d, ok := a.Value.(time.Duration)
+	if !ok {
+		fmt.Println("wrong type")
+		return
+	}
 	b.Active = true
-	ctx.After(800*time.Millisecond, func(_ app.Context) {
+	ctx.After(d, func(_ app.Context) {
 		ctx.Dispatch(func(_ app.Context) {
 			b.Active = false
 		})

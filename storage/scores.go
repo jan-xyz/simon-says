@@ -17,17 +17,6 @@ type Scores struct {
 	Endless map[int]int
 }
 
-// Difficulty represents the games difficulty for the statistics.
-type Difficulty string
-
-// List of possible difficulties.
-const (
-	Easy    Difficulty = "easy"
-	Medium  Difficulty = "medium"
-	Hard    Difficulty = "hard"
-	Endless Difficulty = "endless"
-)
-
 // Score is the individual scores for the basic difficulties. Endless doesn't have Wins that
 // is why it isn't tracked with Win/Loss Scores.
 type Score struct {

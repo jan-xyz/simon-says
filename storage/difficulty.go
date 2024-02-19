@@ -4,6 +4,17 @@ import "github.com/maxence-charriere/go-app/v9/pkg/app"
 
 const localStorageDifficulty = "difficulty"
 
+// Difficulty represents the games difficulty for the statistics.
+type Difficulty string
+
+// List of possible difficulties.
+const (
+	Easy    Difficulty = "easy"
+	Medium  Difficulty = "medium"
+	Hard    Difficulty = "hard"
+	Endless Difficulty = "endless"
+)
+
 // LoadDifficulty loads the difficulty from local storage.
 // If the value is not supported, it defaults to [Easy]
 func LoadDifficulty(ctx app.Context) Difficulty {
