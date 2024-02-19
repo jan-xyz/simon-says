@@ -41,6 +41,9 @@ func main() {
 	h := &app.Handler{
 		Name:        "Simon Says",
 		Description: "A game of simon says",
+		Scripts: []string{
+			"https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js",
+		},
 		Styles: []string{
 			"/web/styles.css",
 		},
