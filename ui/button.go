@@ -41,6 +41,14 @@ func (b *button) Render() app.UI {
 
 func (b *button) handleClick(ctx app.Context, _ app.Event) {
 	ctx.NewActionWithValue(EventClick, b.id)
+	// Needs a short delay because it doesn't work if it is done directly on click
+	// This is done to also have a click animation on touch devices.
+	ctx.After(50*time.Millisecond, func(_ app.Context) {
+		b.Active = true
+		ctx.After(300*time.Millisecond, func(_ app.Context) {
+			b.Active = false
+		})
+	})
 }
 
 func (b *button) handlePlayButton(ctx app.Context, _ app.Action) {
