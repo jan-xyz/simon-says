@@ -58,12 +58,17 @@ func (b *scoreBoard) Render() app.UI {
 		hardText = fmt.Sprintf("%.1f%%", b.hardWinRatio*100)
 	}
 
+	chart := &GoAppBar{Class: "chart1-cls"}
 	return app.Table().Class("scores").Body(
 		app.Tr().Body(app.Td().Text("Easy"), app.Td().Text(easyText)),
 		app.Tr().Body(app.Td().Text("Medium"), app.Td().Text(mediumText)),
 		app.Tr().Body(app.Td().Text("Hard"), app.Td().Text(hardText)),
 		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(b.endlessHighscore)),
-		&GoAppBar{Class: "chart1-cls"},
+		app.Button().Text("update").
+			OnClick(func(ctx app.Context, _ app.Event) {
+				chart.UpdateConfig(ctx, newChart())
+			}),
+		chart,
 	)
 }
 
