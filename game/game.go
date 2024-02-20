@@ -20,6 +20,12 @@ var difficulties = map[storage.Difficulty]int{
 	storage.Hard:   12,
 }
 
+var speeds = map[storage.Speed]time.Duration{
+	storage.Slow:   time.Second,
+	storage.Normal: 800 * time.Millisecond,
+	storage.Fast:   400 * time.Millisecond,
+}
+
 type gameState int
 
 const (
@@ -38,6 +44,7 @@ func New() *Game {
 // Game is the main Game component of the game. Create a new instance by
 type Game struct {
 	difficulty   storage.Difficulty
+	speed        storage.Speed
 	sequence     []int64
 	clicks       int
 	stage        int
@@ -49,8 +56,9 @@ func (g *Game) simonSays(ctx app.Context, sequence []int64) {
 	ctx.Async(func() {
 		<-time.After(200 * time.Millisecond)
 		for _, btnIndex := range sequence {
-			ctx.NewAction(fmt.Sprintf(ui.EventPlayButton, btnIndex))
-			<-time.After(time.Second)
+			eventName := fmt.Sprintf(ui.EventPlayButton, btnIndex)
+			ctx.NewActionWithValue(eventName, speeds[g.speed]-100*time.Millisecond)
+			<-time.After(speeds[g.speed])
 		}
 		g.state = gameStatePlayerSays
 		ctx.NewActionWithValue(ui.EventStateChange, "Repeat what Simon said...")
@@ -59,12 +67,13 @@ func (g *Game) simonSays(ctx app.Context, sequence []int64) {
 
 // HandleNewGame is the handler to invoke to start a new game.
 func (g *Game) HandleNewGame(ctx app.Context, a app.Action) {
-	d, ok := a.Value.(storage.Difficulty)
+	d, ok := a.Value.(ui.NewGameSettings)
 	if !ok {
 		fmt.Println("wrong type")
 		return
 	}
-	g.difficulty = d
+	g.difficulty = d.Difficulty
+	g.speed = d.Speed
 	g.clicks = 0
 	g.sequence = []int64{nextNumber()}
 	g.stage = 1
