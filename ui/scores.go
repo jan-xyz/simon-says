@@ -47,7 +47,7 @@ func (b *scoreBoard) Render() app.UI {
 		hardText = fmt.Sprintf("%.1f%%", hardWinRatio*100)
 	}
 
-	chart := &GoAppBar{Class: "chart1-cls", Bar: newChart(b.scores.Endless)}
+	chart := &barChart{Bar: newBarChart(b.scores.Endless)}
 	scores := app.Table().Class("scores").Body(
 		app.Tr().Body(app.Td().Text("Easy"), app.Td().Text(easyText)),
 		app.Tr().Body(app.Td().Text("Medium"), app.Td().Text(mediumText)),
