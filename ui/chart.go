@@ -8,10 +8,17 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
-func newChart(scores map[int]int, max int) *charts.Bar {
+func newChart(scores map[int]int) *charts.Bar {
+	max := 0
+	for score := range scores {
+		if score > max {
+			max = score
+		}
+	}
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
 		Title: "Endless Score Distribution",
@@ -42,11 +49,14 @@ type GoAppBar struct {
 }
 
 func (c *GoAppBar) OnMount(ctx app.Context) {
-	ctx.After(time.Second, func(context app.Context) {
+	s := storage.LoadScores(ctx)
+	ctx.After(50*time.Millisecond, func(ctx app.Context) {
 		c.eChartsInstance = app.Window().Get("echarts").
 			Call("init", c.JSValue(), c.Options.Theme)
-		c.UpdateConfig(context, c.Options)
+
+		c.UpdateConfig(ctx, newChart(s.Endless))
 	})
+	ctx.Handle(storage.EventScoreUpdate, c.HandleScoreUpdate)
 }
 
 func (c *GoAppBar) OnDismount() {
@@ -81,4 +91,13 @@ func (c *GoAppBar) Render() app.UI {
 	return app.Div().Class(c.Class).ID(c.Options.ID).
 		Style("width", c.Options.Initialization.Width).
 		Style("height", c.Options.Initialization.Height)
+}
+
+func (c *GoAppBar) HandleScoreUpdate(ctx app.Context, a app.Action) {
+	s, ok := a.Value.(storage.Scores)
+	if !ok {
+		fmt.Println("wrong type")
+		return
+	}
+	c.UpdateConfig(ctx, newChart(s.Endless))
 }
