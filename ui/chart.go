@@ -2,7 +2,8 @@ package ui
 
 import (
 	"encoding/json"
-	"math/rand"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
@@ -10,24 +11,26 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
-func newChart() *charts.Bar {
+func newChart(scores map[int]int, max int) *charts.Bar {
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title:    "go-echarts used with go-app",
-		Subtitle: "Subtitle goes here",
+		Title: "Endless Score Distribution",
 	}))
 
-	generateBarItems := func() []opts.BarData {
-		items := make([]opts.BarData, 0)
-		for i := 0; i < 7; i++ {
-			items = append(items, opts.BarData{Value: rand.Intn(300)})
+	xAxis := []string{}
+	series := []opts.BarData{}
+	for i := 1; i <= max; i++ {
+		xAxis = append(xAxis, strconv.Itoa(i))
+		val, ok := scores[i]
+		if !ok {
+			val = 0
 		}
-		return items
+		series = append(series, opts.BarData{Value: val})
 	}
+	fmt.Println(scores)
 
-	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
-		AddSeries("Category A", generateBarItems()).
-		AddSeries("Category B", generateBarItems())
+	bar.SetXAxis(xAxis).
+		AddSeries("", series)
 	return bar
 }
 

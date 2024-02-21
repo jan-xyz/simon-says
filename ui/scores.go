@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
@@ -15,6 +16,7 @@ type scoreBoard struct {
 	mediumWinRatio   float64
 	hardWinRatio     float64
 	endlessHighscore int
+	chart            *charts.Bar
 }
 
 // OnMount implements the Mounter interface to run this on mounting the component.
@@ -36,6 +38,7 @@ func (b *scoreBoard) storeScores(s storage.Scores) {
 		}
 	}
 	b.endlessHighscore = max
+	b.chart = newChart(s.Endless, b.endlessHighscore)
 }
 
 // Render implements the interface for go-app to render the component.
@@ -53,16 +56,12 @@ func (b *scoreBoard) Render() app.UI {
 		hardText = fmt.Sprintf("%.1f%%", b.hardWinRatio*100)
 	}
 
-	chart := &GoAppBar{Class: "chart1-cls"}
+	chart := &GoAppBar{Class: "chart1-cls", Options: b.chart}
 	return app.Table().Class("scores").Body(
 		app.Tr().Body(app.Td().Text("Easy"), app.Td().Text(easyText)),
 		app.Tr().Body(app.Td().Text("Medium"), app.Td().Text(mediumText)),
 		app.Tr().Body(app.Td().Text("Hard"), app.Td().Text(hardText)),
 		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(b.endlessHighscore)),
-		app.Button().Text("update").
-			OnClick(func(ctx app.Context, _ app.Event) {
-				chart.UpdateConfig(ctx, newChart())
-			}),
 		chart,
 	)
 }
