@@ -8,21 +8,21 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
-	"github.com/jan-xyz/simon-says/storage"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
 func newChart(scores map[int]int) *charts.Bar {
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
+		Title: "Endless Score Distribution",
+	}))
+
 	max := 0
 	for score := range scores {
 		if score > max {
 			max = score
 		}
 	}
-	bar := charts.NewBar()
-	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title: "Endless Score Distribution",
-	}))
 
 	xAxis := []string{}
 	series := []opts.BarData{}
@@ -36,27 +36,23 @@ func newChart(scores map[int]int) *charts.Bar {
 	}
 	fmt.Println(scores)
 
-	bar.SetXAxis(xAxis).
-		AddSeries("", series)
+	bar.SetXAxis(xAxis).AddSeries("", series)
 	return bar
 }
 
 type GoAppBar struct {
 	app.Compo
 	Class           string
-	Options         *charts.Bar
+	Bar             *charts.Bar
 	eChartsInstance app.Value
 }
 
 func (c *GoAppBar) OnMount(ctx app.Context) {
-	s := storage.LoadScores(ctx)
 	ctx.After(50*time.Millisecond, func(ctx app.Context) {
 		c.eChartsInstance = app.Window().Get("echarts").
-			Call("init", c.JSValue(), c.Options.Theme)
-
-		c.UpdateConfig(ctx, newChart(s.Endless))
+			Call("init", c.JSValue(), c.Bar.Theme)
+		c.UpdateConfig(ctx, c.Bar)
 	})
-	ctx.Handle(storage.EventScoreUpdate, c.HandleScoreUpdate)
 }
 
 func (c *GoAppBar) OnDismount() {
@@ -67,16 +63,19 @@ func (c *GoAppBar) OnDismount() {
 
 func (c *GoAppBar) UpdateConfig(ctx app.Context, config *charts.Bar) {
 	config.Validate()
-	c.Options = config
+	c.Bar = config
 
 	if c.eChartsInstance != nil {
 		c.eChartsInstance.Call("dispose")
 	}
 	c.eChartsInstance = app.Window().Get("echarts").
-		Call("init", c.JSValue(), c.Options.Theme)
+		Call("init", c.JSValue(), c.Bar.Theme)
 
 	ctx.Async(func() {
-		jsonString, _ := json.Marshal(c.Options.JSON())
+		jsonString, err := json.Marshal(c.Bar.JSON())
+		if err != nil {
+			panic(err)
+		}
 		options := app.Window().Get("JSON").Call("parse", string(jsonString))
 		c.eChartsInstance.Call("setOption", options)
 		c.Update()
@@ -84,20 +83,12 @@ func (c *GoAppBar) UpdateConfig(ctx app.Context, config *charts.Bar) {
 }
 
 func (c *GoAppBar) Render() app.UI {
-	if c.Options == nil {
-		c.Options = charts.NewBar()
-		c.Options.Validate()
+	fmt.Println("render")
+	if c.Bar == nil {
+		c.Bar = charts.NewBar()
+		c.Bar.Validate()
 	}
-	return app.Div().Class(c.Class).ID(c.Options.ID).
-		Style("width", c.Options.Initialization.Width).
-		Style("height", c.Options.Initialization.Height)
-}
-
-func (c *GoAppBar) HandleScoreUpdate(ctx app.Context, a app.Action) {
-	s, ok := a.Value.(storage.Scores)
-	if !ok {
-		fmt.Println("wrong type")
-		return
-	}
-	c.UpdateConfig(ctx, newChart(s.Endless))
+	return app.Div().Class(c.Class).ID(c.Bar.ID).
+		Style("width", c.Bar.Initialization.Width).
+		Style("height", c.Bar.Initialization.Height)
 }
