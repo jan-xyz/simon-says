@@ -61,18 +61,18 @@ func (u *UI) Render() app.UI {
 		secondButton,
 		thirdButton,
 		fourthButton,
-		scores,
-		app.If(u.updateAvailable,
-			app.Button().Class("simon-button", "update").
-				Body(app.Span().Text("Update!")).
-				OnClick(u.onUpdateClick),
-		),
 	)
 
 	return app.Div().Body(
 		menu,
 		gameStateText,
 		gameField,
+		scores,
+		app.If(u.updateAvailable,
+			app.Button().Class("simon-button", "update").
+				Body(app.Span().Text("Update!")).
+				OnClick(u.onUpdateClick),
+		),
 	)
 }
 

@@ -82,7 +82,7 @@ func (c *barChart) OnMount(ctx app.Context) {
 	ctx.After(50*time.Millisecond, func(ctx app.Context) {
 		ctx.Defer(func(_ app.Context) {
 			c.eChartsInstance = app.Window().Get("echarts").
-				Call("init", c.JSValue(), c.Bar.Theme)
+				Call("init", c.JSValue())
 			c.UpdateBarChart(c.Bar)
 		})
 	})
@@ -104,6 +104,12 @@ func (c *barChart) OnDismount() {
 	}
 }
 
+func (c *barChart) OnResize(ctx app.Context) {
+	if c.eChartsInstance != nil {
+		c.eChartsInstance.Call("resize")
+	}
+}
+
 func (c *barChart) UpdateBarChart(config *charts.Bar) {
 	config.Validate()
 	c.Bar = config
@@ -112,7 +118,7 @@ func (c *barChart) UpdateBarChart(config *charts.Bar) {
 		c.eChartsInstance.Call("dispose")
 	}
 	c.eChartsInstance = app.Window().Get("echarts").
-		Call("init", c.JSValue(), c.Bar.Theme)
+		Call("init", c.JSValue())
 
 	jsonString, err := json.Marshal(c.Bar.JSON())
 	if err != nil {
@@ -129,7 +135,5 @@ func (c *barChart) Render() app.UI {
 		c.Bar = charts.NewBar()
 		c.Bar.Validate()
 	}
-	return app.Div().Class("chart1-cls").ID(c.Bar.ID).
-		Style("width", c.Bar.Initialization.Width).
-		Style("height", c.Bar.Initialization.Height)
+	return app.Div().Class("chart").ID(c.Bar.ID)
 }

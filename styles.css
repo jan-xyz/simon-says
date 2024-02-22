@@ -96,7 +96,7 @@ input[name="speed-setting"] {
 
 @media (max-width: 600px) {
   .game-button {
-    width: calc(100% - 10px);
+    width: calc(50% - 10px);
   }
 
   html, body {
@@ -194,6 +194,18 @@ input[name="speed-setting"] {
 .scores {
   color: white;
   width: calc(100% - 10px);
+}
+
+.chart {
+  width: 600px;
+  height: 400px;
+}
+
+@media (max-width: 600px) {
+  .chart {
+    width: calc(100% - 10px);
+  }
+
 }
 
 /* Update */
