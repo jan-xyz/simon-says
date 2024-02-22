@@ -111,7 +111,7 @@ func (g *Game) lostGame(ctx app.Context) {
 	g.storageMutex.Lock()
 	defer g.storageMutex.Unlock()
 	g.state = gameStateLost
-	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You lost in %s mode in stage %d. Franzi has a highscore of 21.", g.difficulty, len(g.sequence)))
+	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You lost in %s mode with a score of %d", g.difficulty, len(g.sequence)))
 
 	// increment losses
 	switch g.difficulty {
