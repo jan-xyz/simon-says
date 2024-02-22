@@ -22,6 +22,7 @@ func main() {
 	// TODO: for endless mode add histogram of how far you got.
 	// TODO: add tests
 	// TODO: add dependabot
+	// TODO: light/dark mode
 	app.Handle(ui.EventClick, l.HandleClick)
 	app.Handle(ui.EventNewGame, l.HandleNewGame)
 
