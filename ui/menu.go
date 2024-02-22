@@ -71,6 +71,7 @@ func (g *menu) storeSpeed(ctx app.Context, _ app.Event) {
 	g.selectedSpeed = s
 }
 
+// NewGameSettings are the settings of a new game that gets published to the logic
 type NewGameSettings struct {
 	Speed      storage.Speed
 	Difficulty storage.Difficulty

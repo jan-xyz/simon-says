@@ -80,22 +80,22 @@ type barChart struct {
 
 func (c *barChart) OnMount(ctx app.Context) {
 	ctx.After(50*time.Millisecond, func(ctx app.Context) {
-		ctx.Defer(func(ctx app.Context) {
+		ctx.Defer(func(_ app.Context) {
 			c.eChartsInstance = app.Window().Get("echarts").
 				Call("init", c.JSValue(), c.Bar.Theme)
-			c.UpdateBarChart(ctx, c.Bar)
+			c.UpdateBarChart(c.Bar)
 		})
 	})
 	ctx.Handle(storage.EventScoreUpdate, c.HandleScoreUpdate)
 }
 
-func (c *barChart) HandleScoreUpdate(ctx app.Context, a app.Action) {
+func (c *barChart) HandleScoreUpdate(_ app.Context, a app.Action) {
 	s, ok := a.Value.(storage.Scores)
 	if !ok {
 		fmt.Println("wrong type")
 		return
 	}
-	c.UpdateBarChart(ctx, newBarChart(s.Endless))
+	c.UpdateBarChart(newBarChart(s.Endless))
 }
 
 func (c *barChart) OnDismount() {
@@ -104,7 +104,7 @@ func (c *barChart) OnDismount() {
 	}
 }
 
-func (c *barChart) UpdateBarChart(ctx app.Context, config *charts.Bar) {
+func (c *barChart) UpdateBarChart(config *charts.Bar) {
 	config.Validate()
 	c.Bar = config
 

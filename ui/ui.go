@@ -81,7 +81,7 @@ func (u *UI) onUpdateClick(ctx app.Context, _ app.Event) {
 	ctx.Reload()
 }
 
-func (u *UI) handleStateChange(ctx app.Context, a app.Action) {
+func (u *UI) handleStateChange(_ app.Context, a app.Action) {
 	txt, ok := a.Value.(string)
 	if !ok {
 		fmt.Println("wrong type")
