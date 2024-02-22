@@ -12,11 +12,41 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 )
 
+const (
+	dark  = "#05062d"
+	light = "#a4a4a4"
+)
+
 func newBarChart(scores map[int]int) *charts.Bar {
 	bar := charts.NewBar()
-	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title: "Endless Score Distribution",
-	}))
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{
+			Title:      "Endless Score Distribution",
+			TitleStyle: &opts.TextStyle{Color: dark},
+		}),
+		charts.WithInitializationOpts(opts.Initialization{
+			BackgroundColor: light,
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			SplitArea: &opts.SplitArea{Show: false},
+			SplitLine: &opts.SplitLine{Show: false},
+			AxisLabel: &opts.AxisLabel{Show: true, Color: dark},
+			AxisLine:  &opts.AxisLine{Show: true, LineStyle: &opts.LineStyle{Color: dark}},
+		}, 0),
+		charts.WithXAxisOpts(opts.XAxis{
+			SplitArea: &opts.SplitArea{Show: false},
+			SplitLine: &opts.SplitLine{Show: false},
+			AxisLabel: &opts.AxisLabel{Show: true, Color: dark},
+			AxisTick:  &opts.AxisTick{Show: true},
+		}, 0),
+		charts.WithColorsOpts(opts.Colors{dark}),
+	)
+	bar.SetSeriesOptions(
+		charts.WithItemStyleOpts(opts.ItemStyle{
+			BorderColor: dark,
+			BorderWidth: 0,
+		}),
+	)
 
 	max := 0
 	for score := range scores {
