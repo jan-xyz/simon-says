@@ -8,6 +8,7 @@ build:
 	cp styles.css _site/web/
 	cp icon.png _site/web/
 	cp icon.svg _site/web/
+	cp stats.png _site/web/
 	go run .
 
 vim:
@@ -19,6 +20,7 @@ serve:
 	cp styles.css web/
 	cp icon.png web/
 	cp icon.svg web/
+	cp stats.png web/
 	go run . --serve
 
 test:

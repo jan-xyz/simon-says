@@ -54,7 +54,11 @@ func (b *scoreBoard) Render() app.UI {
 		app.Tr().Body(app.Td().Text("Hard"), app.Td().Text(hardText)),
 		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(max)),
 	)
-	return app.Span().Body(scores, chart)
+	return app.Span().Body(
+		app.Input().Type("image").Src("web/stats.png").Style("height", "29px").Style("width", "29px"),
+		scores,
+		chart,
+	)
 }
 
 func (b *scoreBoard) HandleScoreUpdate(_ app.Context, a app.Action) {
