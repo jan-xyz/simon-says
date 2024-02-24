@@ -188,7 +188,11 @@ input[name="speed-setting"] {
   background: none;
 }
 
-/* Scores */
+/* Stats */
+.stats {
+  width: 100%;
+}
+
 .scores {
   color: white;
   width: calc(100% - 10px);

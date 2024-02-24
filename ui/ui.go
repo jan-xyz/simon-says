@@ -66,7 +66,6 @@ func (u *UI) Render() app.UI {
 	)
 
 	return app.Div().Body(
-		gameStateText,
 		app.If(u.gameIsRunning,
 			gameField,
 		).Else(
@@ -78,6 +77,7 @@ func (u *UI) Render() app.UI {
 					OnClick(u.onUpdateClick),
 			),
 		),
+		gameStateText,
 	)
 }
 

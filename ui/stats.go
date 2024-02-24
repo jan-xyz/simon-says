@@ -54,7 +54,7 @@ func (s *Stats) Render() app.UI {
 		app.Tr().Body(app.Td().Text("Hard"), app.Td().Text(hardText)),
 		app.Tr().Body(app.Td().Text("Endless"), app.Td().Text(max)),
 	)
-	return app.Span().Body(
+	return app.Span().Class("stats").Body(
 		app.A().Href("/").Body(app.Img().Src("web/stats.png").Style("height", "29px").Style("width", "29px")),
 		stats,
 		chart,
