@@ -14,6 +14,7 @@ const (
 	EventPlayButton  = "play%d"
 	EventNewGame     = "newGame"
 	EventStateChange = "stateChange"
+	EventGameRunning = "gameRunning"
 )
 
 // NewUI is the factory for the main UI component.
@@ -28,14 +29,13 @@ type UI struct {
 	Text            string
 	updateAvailable bool
 
-	showNewGame bool
-	playGame    bool
-	showStats   bool
+	gameIsRunning bool
 }
 
 // OnMount implements the Mounter interface to run this on mounting the component.
 func (u *UI) OnMount(ctx app.Context) {
 	ctx.Handle(EventStateChange, u.handleStateChange)
+	ctx.Handle(EventGameRunning, u.handleGameRunning)
 }
 
 // OnAppUpdate satisfies the app.AppUpdater interface. It is called when the app
@@ -66,14 +66,17 @@ func (u *UI) Render() app.UI {
 	)
 
 	return app.Div().Body(
-		app.A().Href("/stats").Body(app.Img().Src("web/stats.png").Style("height", "29px").Style("width", "29px")),
-		menu,
 		gameStateText,
-		gameField,
-		app.If(u.updateAvailable,
-			app.Button().Class("simon-button", "update").
-				Body(app.Span().Text("Update!")).
-				OnClick(u.onUpdateClick),
+		app.If(u.gameIsRunning,
+			gameField,
+		).Else(
+			app.A().Href("/stats").Body(app.Img().Src("web/stats.png").Style("height", "29px").Style("width", "29px")),
+			menu,
+			app.If(u.updateAvailable,
+				app.Button().Class("simon-button", "update").
+					Body(app.Span().Text("Update!")).
+					OnClick(u.onUpdateClick),
+			),
 		),
 	)
 }
@@ -90,4 +93,13 @@ func (u *UI) handleStateChange(_ app.Context, a app.Action) {
 		return
 	}
 	u.Text = txt
+}
+
+func (u *UI) handleGameRunning(_ app.Context, a app.Action) {
+	gameIsRunning, ok := a.Value.(bool)
+	if !ok {
+		fmt.Println("wrong type")
+		return
+	}
+	u.gameIsRunning = gameIsRunning
 }

@@ -79,6 +79,7 @@ func (g *Game) HandleNewGame(ctx app.Context, a app.Action) {
 	g.stage = 1
 	g.state = gameStateSimonSays
 	ctx.NewActionWithValue(ui.EventStateChange, "Simon says...")
+	ctx.NewActionWithValue(ui.EventGameRunning, true)
 	g.simonSays(ctx, g.sequence)
 }
 
@@ -112,6 +113,7 @@ func (g *Game) lostGame(ctx app.Context) {
 	defer g.storageMutex.Unlock()
 	g.state = gameStateLost
 	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You lost in %s mode with a score of %d", g.difficulty, len(g.sequence)))
+	ctx.NewActionWithValue(ui.EventGameRunning, false)
 
 	// increment losses
 	switch g.difficulty {
@@ -133,6 +135,7 @@ func (g *Game) wonGame(ctx app.Context) {
 	defer g.storageMutex.Unlock()
 	g.state = gameStateWon
 	ctx.NewActionWithValue(ui.EventStateChange, fmt.Sprintf("You won in %s mode. Start a New Game", g.difficulty))
+	ctx.NewActionWithValue(ui.EventGameRunning, false)
 
 	// increment wins
 	switch g.difficulty {
