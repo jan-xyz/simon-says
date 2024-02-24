@@ -26,8 +26,8 @@ func main() {
 	app.Handle(ui.EventClick, l.HandleClick)
 	app.Handle(ui.EventNewGame, l.HandleNewGame)
 
-	g := ui.NewUI()
-	app.Route("/", g)
+	app.Route("/", &ui.UI{})
+	app.Route("/stats", &ui.Stats{})
 
 	// When executed on the client-side, the RunWhenOnBrowser() function
 	// launches the app,  starting a loop that listens for app events and

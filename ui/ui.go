@@ -27,6 +27,10 @@ type UI struct {
 
 	Text            string
 	updateAvailable bool
+
+	showNewGame bool
+	playGame    bool
+	showStats   bool
 }
 
 // OnMount implements the Mounter interface to run this on mounting the component.
@@ -54,8 +58,6 @@ func (u *UI) Render() app.UI {
 	thirdButton := newButton(2)
 	fourthButton := newButton(3)
 
-	scores := &scoreBoard{}
-
 	gameField.Body(
 		firstButton,
 		secondButton,
@@ -64,10 +66,10 @@ func (u *UI) Render() app.UI {
 	)
 
 	return app.Div().Body(
+		app.A().Href("/stats").Body(app.Img().Src("web/stats.png").Style("height", "29px").Style("width", "29px")),
 		menu,
 		gameStateText,
 		gameField,
-		scores,
 		app.If(u.updateAvailable,
 			app.Button().Class("simon-button", "update").
 				Body(app.Span().Text("Update!")).

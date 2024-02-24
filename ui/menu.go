@@ -44,7 +44,6 @@ func (g *menu) Render() app.UI {
 		speedPanel = append(speedPanel, input, label)
 	}
 	t := app.Div().Body(
-		app.Input().Type("image").Src("web/stats.png").Style("height", "29px").Style("width", "29px"),
 		app.Button().
 			Class("simon-button", "new-game").
 			Body(app.Span().Text("New Game")).
