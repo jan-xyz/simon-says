@@ -65,7 +65,6 @@ func newBarChart(scores map[int]int) *charts.Bar {
 		}
 		series = append(series, opts.BarData{Value: val})
 	}
-	fmt.Println(scores)
 
 	bar.SetXAxis(xAxis).AddSeries("", series)
 	return bar
@@ -130,7 +129,6 @@ func (c *barChart) UpdateBarChart(config *charts.Bar) {
 }
 
 func (c *barChart) Render() app.UI {
-	fmt.Println("render")
 	if c.Bar == nil {
 		c.Bar = charts.NewBar()
 		c.Bar.Validate()
