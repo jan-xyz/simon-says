@@ -7,7 +7,7 @@ require (
 	github.com/maxence-charriere/go-app/v9 v9.8.0
 	github.com/mgechev/revive v1.3.7
 	github.com/stretchr/testify v1.9.0
-	honnef.co/go/tools v0.4.6
+	honnef.co/go/tools v0.4.7
 )
 
 require (
