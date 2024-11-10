@@ -2,3 +2,4 @@ main.wasm
 wasm_exec.js
 _site
 web
+/target
