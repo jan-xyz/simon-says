@@ -9,9 +9,8 @@ use bevy::prelude::{
 };
 use bevy::sprite::ColorMaterial;
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle, Wireframe2dConfig, Wireframe2dPlugin};
-use bevy::text::{TextSection, TextStyle};
+use bevy::text::TextStyle;
 use bevy::time::{Time, Timer, TimerMode};
-use bevy::ui::{PositionType, Style, Val};
 use bevy::utils::default;
 use bevy::DefaultPlugins;
 
@@ -55,9 +54,11 @@ fn setup(
     let b2 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c2 = Color::hsl(360. * 2 as f32 / 4 as f32, 0.95, 0.7);
     let xy2 = (120., -120.);
+
     let b3 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c3 = Color::hsl(360. * 3 as f32 / 4 as f32, 0.95, 0.7);
     let xy3 = (-120., 120.);
+
     let b4 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c4 = Color::hsl(360. * 4 as f32 / 4 as f32, 0.95, 0.7);
     let xy4 = (120., 120.);
