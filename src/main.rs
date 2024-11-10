@@ -17,9 +17,6 @@ use bevy::DefaultPlugins;
 
 const TEXT_COLOR: Color = Color::srgb(0.5, 0.5, 1.0);
 const FONT_SIZE: f32 = 40.0;
-const TEXT_PADDING: Val = Val::Px(5.0);
-
-const X_EXTENT: f32 = 900.;
 
 fn main() {
     App::new()
@@ -40,47 +37,55 @@ fn setup(
     // Add Text
     commands.spawn((
         HelloWorldUi,
-        TextBundle::from_sections([TextSection::new(
+        TextBundle::from_section(
             "Hello World",
             TextStyle {
                 font_size: FONT_SIZE,
                 color: TEXT_COLOR,
                 ..default()
             },
-        )])
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            top: TEXT_PADDING,
-            left: TEXT_PADDING,
-            ..default()
-        }),
+        ),
     ));
 
     // Add Simon Buttons
-    let shapes = [
-        Mesh2dHandle(meshes.add(Rectangle::new(50.0, 100.0))),
-        Mesh2dHandle(meshes.add(Rectangle::new(50.0, 100.0))),
-        Mesh2dHandle(meshes.add(Rectangle::new(50.0, 100.0))),
-        Mesh2dHandle(meshes.add(Rectangle::new(50.0, 100.0))),
-    ];
-    let num_shapes = shapes.len();
+    let b1 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
+    let c1 = Color::hsl(360. * 1 as f32 / 4 as f32, 0.95, 0.7);
+    let xy1 = (-120., -120.);
 
-    for (i, shape) in shapes.into_iter().enumerate() {
-        // Distribute colors evenly across the rainbow.
-        let color = Color::hsl(360. * i as f32 / num_shapes as f32, 0.95, 0.7);
+    let b2 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
+    let c2 = Color::hsl(360. * 2 as f32 / 4 as f32, 0.95, 0.7);
+    let xy2 = (120., -120.);
+    let b3 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
+    let c3 = Color::hsl(360. * 3 as f32 / 4 as f32, 0.95, 0.7);
+    let xy3 = (-120., 120.);
+    let b4 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
+    let c4 = Color::hsl(360. * 4 as f32 / 4 as f32, 0.95, 0.7);
+    let xy4 = (120., 120.);
 
-        commands.spawn(MaterialMesh2dBundle {
-            mesh: shape,
-            material: materials.add(color),
-            transform: Transform::from_xyz(
-                // Distribute shapes from -X_EXTENT/2 to +X_EXTENT/2.
-                -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
-                0.0,
-                0.0,
-            ),
-            ..default()
-        });
-    }
+    commands.spawn(MaterialMesh2dBundle {
+        mesh: b1,
+        material: materials.add(c1),
+        transform: Transform::from_xyz(xy1.0, xy1.1, 0.),
+        ..default()
+    });
+    commands.spawn(MaterialMesh2dBundle {
+        mesh: b2,
+        material: materials.add(c2),
+        transform: Transform::from_xyz(xy2.0, xy2.1, 0.),
+        ..default()
+    });
+    commands.spawn(MaterialMesh2dBundle {
+        mesh: b3,
+        material: materials.add(c3),
+        transform: Transform::from_xyz(xy3.0, xy3.1, 0.),
+        ..default()
+    });
+    commands.spawn(MaterialMesh2dBundle {
+        mesh: b4,
+        material: materials.add(c4),
+        transform: Transform::from_xyz(xy4.0, xy4.1, 0.),
+        ..default()
+    });
 }
 
 #[derive(Component)]
