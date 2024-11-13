@@ -1,16 +1,19 @@
 use bevy::app::{App, Plugin, Startup, Update};
-use bevy::asset::Assets;
 use bevy::color::Color;
 use bevy::input::ButtonInput;
+use bevy::prelude::BuildChildren;
+use bevy::prelude::ButtonBundle;
 use bevy::prelude::KeyCode;
-use bevy::prelude::Transform;
-use bevy::prelude::{
-    Camera2dBundle, Commands, Component, Mesh, Rectangle, Res, ResMut, Resource, TextBundle,
-};
-use bevy::sprite::ColorMaterial;
-use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle, Wireframe2dConfig, Wireframe2dPlugin};
+use bevy::prelude::NodeBundle;
+use bevy::prelude::{Camera2dBundle, Commands, Component, Res, ResMut, Resource, TextBundle};
+use bevy::sprite::{Wireframe2dConfig, Wireframe2dPlugin};
 use bevy::text::TextStyle;
 use bevy::time::{Time, Timer, TimerMode};
+use bevy::ui::AlignItems;
+use bevy::ui::FlexDirection;
+use bevy::ui::JustifyContent;
+use bevy::ui::Style;
+use bevy::ui::Val;
 use bevy::utils::default;
 use bevy::DefaultPlugins;
 
@@ -25,11 +28,7 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+fn setup(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2dBundle::default());
 
@@ -47,46 +46,67 @@ fn setup(
     ));
 
     // Add Simon Buttons
-    let b1 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c1 = Color::hsl(360. * 1 as f32 / 4 as f32, 0.95, 0.7);
-    let xy1 = (-120., -120.);
-
-    let b2 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c2 = Color::hsl(360. * 2 as f32 / 4 as f32, 0.95, 0.7);
-    let xy2 = (120., -120.);
-
-    let b3 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c3 = Color::hsl(360. * 3 as f32 / 4 as f32, 0.95, 0.7);
-    let xy3 = (-120., 120.);
-
-    let b4 = Mesh2dHandle(meshes.add(Rectangle::new(100.0, 100.0)));
     let c4 = Color::hsl(360. * 4 as f32 / 4 as f32, 0.95, 0.7);
-    let xy4 = (120., 120.);
 
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: b1,
-        material: materials.add(c1),
-        transform: Transform::from_xyz(xy1.0, xy1.1, 0.),
-        ..default()
-    });
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: b2,
-        material: materials.add(c2),
-        transform: Transform::from_xyz(xy2.0, xy2.1, 0.),
-        ..default()
-    });
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: b3,
-        material: materials.add(c3),
-        transform: Transform::from_xyz(xy3.0, xy3.1, 0.),
-        ..default()
-    });
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: b4,
-        material: materials.add(c4),
-        transform: Transform::from_xyz(xy4.0, xy4.1, 0.),
-        ..default()
-    });
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c1.into(),
+                ..default()
+            });
+        })
+        .with_children(|parent| {
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c2.into(),
+                ..default()
+            });
+        })
+        .with_children(|parent| {
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c3.into(),
+                ..default()
+            });
+        })
+        .with_children(|parent| {
+            parent.spawn(ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c4.into(),
+                ..default()
+            });
+        });
 }
 
 #[derive(Component)]
