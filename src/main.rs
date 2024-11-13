@@ -7,17 +7,26 @@ use bevy::app::Update;
 use bevy::color::Color;
 use bevy::input::ButtonInput;
 use bevy::prelude::BuildChildren;
+use bevy::prelude::Button;
 use bevy::prelude::ButtonBundle;
 use bevy::prelude::Camera2dBundle;
+use bevy::prelude::Changed;
+use bevy::prelude::Children;
 use bevy::prelude::Commands;
 use bevy::prelude::KeyCode;
 use bevy::prelude::NodeBundle;
+use bevy::prelude::Query;
 use bevy::prelude::Res;
 use bevy::prelude::ResMut;
+use bevy::prelude::With;
 use bevy::sprite::Wireframe2dConfig;
 use bevy::sprite::Wireframe2dPlugin;
+use bevy::text::Text;
 use bevy::ui::AlignItems;
+use bevy::ui::BackgroundColor;
+use bevy::ui::BorderColor;
 use bevy::ui::FlexDirection;
+use bevy::ui::Interaction;
 use bevy::ui::JustifyContent;
 use bevy::ui::Style;
 use bevy::ui::Val;
@@ -32,7 +41,7 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn ui_system(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2dBundle::default());
 
@@ -100,13 +109,30 @@ fn setup(mut commands: Commands) {
         });
 }
 
+fn button_system(
+    mut interaction_query: Query<
+        (&Interaction, &BackgroundColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+) {
+    for (interaction, color) in &mut interaction_query {
+        match interaction {
+            Interaction::Pressed => {
+                println!("button pressed: {:?}", color)
+            }
+            _ => {}
+        }
+    }
+}
+
 pub struct SimonSaysPlugin;
 
 impl Plugin for SimonSaysPlugin {
     fn build(&self, app: &mut App) {
         let g = game::Game::new();
         g.start_game();
-        app.add_systems(Startup, setup)
+        app.add_systems(Startup, ui_system)
+            .add_systems(Update, button_system)
             .add_systems(Update, toggle_wireframe);
     }
 }
