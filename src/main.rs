@@ -48,62 +48,55 @@ fn ui_system(mut commands: Commands) {
     let c3 = Color::hsl(360. * 3 as f32 / 4 as f32, 0.95, 0.7);
     let c4 = Color::hsl(360. * 4 as f32 / 4 as f32, 0.95, 0.7);
 
-    commands
-        .spawn(NodeBundle {
+    let mut flex_box = commands.spawn(NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            ..default()
+        },
+        ..default()
+    });
+    flex_box.with_children(|parent| {
+        parent.spawn(ButtonBundle {
             style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                flex_direction: FlexDirection::Row,
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
+                width: Val::Px(100.),
+                height: Val::Px(100.),
                 ..default()
             },
+            background_color: c1.into(),
             ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ButtonBundle {
-                style: Style {
-                    width: Val::Px(100.),
-                    height: Val::Px(100.),
-                    ..default()
-                },
-                background_color: c1.into(),
-                ..default()
-            });
-        })
-        .with_children(|parent| {
-            parent.spawn(ButtonBundle {
-                style: Style {
-                    width: Val::Px(100.),
-                    height: Val::Px(100.),
-                    ..default()
-                },
-                background_color: c2.into(),
-                ..default()
-            });
-        })
-        .with_children(|parent| {
-            parent.spawn(ButtonBundle {
-                style: Style {
-                    width: Val::Px(100.),
-                    height: Val::Px(100.),
-                    ..default()
-                },
-                background_color: c3.into(),
-                ..default()
-            });
-        })
-        .with_children(|parent| {
-            parent.spawn(ButtonBundle {
-                style: Style {
-                    width: Val::Px(100.),
-                    height: Val::Px(100.),
-                    ..default()
-                },
-                background_color: c4.into(),
-                ..default()
-            });
         });
+        parent.spawn(ButtonBundle {
+            style: Style {
+                width: Val::Px(100.),
+                height: Val::Px(100.),
+                ..default()
+            },
+            background_color: c2.into(),
+            ..default()
+        });
+        parent.spawn(ButtonBundle {
+            style: Style {
+                width: Val::Px(100.),
+                height: Val::Px(100.),
+                ..default()
+            },
+            background_color: c3.into(),
+            ..default()
+        });
+        parent.spawn(ButtonBundle {
+            style: Style {
+                width: Val::Px(100.),
+                height: Val::Px(100.),
+                ..default()
+            },
+            background_color: c4.into(),
+            ..default()
+        });
+    });
 }
 
 fn button_system(
