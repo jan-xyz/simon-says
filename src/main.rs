@@ -6,15 +6,13 @@ use bevy::app::Startup;
 use bevy::app::Update;
 use bevy::color::Color;
 use bevy::prelude::BuildChildren;
-use bevy::prelude::Button;
 use bevy::prelude::ButtonBundle;
 use bevy::prelude::Camera2dBundle;
 use bevy::prelude::Changed;
 use bevy::prelude::Commands;
+use bevy::prelude::Component;
 use bevy::prelude::NodeBundle;
 use bevy::prelude::Query;
-use bevy::prelude::With;
-use bevy::sprite::Wireframe2dPlugin;
 use bevy::ui::AlignItems;
 use bevy::ui::BackgroundColor;
 use bevy::ui::FlexDirection;
@@ -29,7 +27,6 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(SimonSaysPlugin)
-        .add_plugins(Wireframe2dPlugin)
         .run();
 }
 
@@ -55,55 +52,72 @@ fn ui_system(mut commands: Commands) {
         ..default()
     });
     flex_box.with_children(|parent| {
-        parent.spawn(ButtonBundle {
-            style: Style {
-                width: Val::Px(100.),
-                height: Val::Px(100.),
+        parent.spawn((
+            ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c1.into(),
                 ..default()
             },
-            background_color: c1.into(),
-            ..default()
-        });
-        parent.spawn(ButtonBundle {
-            style: Style {
-                width: Val::Px(100.),
-                height: Val::Px(100.),
+            GameButton { num: 1 },
+        ));
+        parent.spawn((
+            ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c2.into(),
                 ..default()
             },
-            background_color: c2.into(),
-            ..default()
-        });
-        parent.spawn(ButtonBundle {
-            style: Style {
-                width: Val::Px(100.),
-                height: Val::Px(100.),
+            GameButton { num: 2 },
+        ));
+        parent.spawn((
+            ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c3.into(),
                 ..default()
             },
-            background_color: c3.into(),
-            ..default()
-        });
-        parent.spawn(ButtonBundle {
-            style: Style {
-                width: Val::Px(100.),
-                height: Val::Px(100.),
+            GameButton { num: 3 },
+        ));
+        parent.spawn((
+            ButtonBundle {
+                style: Style {
+                    width: Val::Px(100.),
+                    height: Val::Px(100.),
+                    ..default()
+                },
+                background_color: c4.into(),
                 ..default()
             },
-            background_color: c4.into(),
-            ..default()
-        });
+            GameButton { num: 4 },
+        ));
     });
 }
 
-fn button_system(
+#[derive(Component)]
+struct GameButton {
+    num: i64,
+}
+
+fn button_clicked(
     mut interaction_query: Query<
-        (&Interaction, &BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (&Interaction, &BackgroundColor, &GameButton),
+        Changed<Interaction>,
     >,
 ) {
-    for (interaction, color) in &mut interaction_query {
+    for (interaction, _color, button) in &mut interaction_query {
         match interaction {
             Interaction::Pressed => {
-                println!("button pressed: {:?}", color)
+                println!("button pressed: {:?}", button.num)
             }
             _ => {}
         }
@@ -117,6 +131,6 @@ impl Plugin for SimonSaysPlugin {
         let g = game::Game::new();
         g.start_game();
         app.add_systems(Startup, ui_system)
-            .add_systems(Update, button_system);
+            .add_systems(Update, button_clicked);
     }
 }
