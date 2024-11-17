@@ -31,22 +31,22 @@ impl Distribution<Button> for Standard {
 #[derive(Resource)]
 pub struct Game {
     sequence: Vec<Button>,
+    current_index: usize,
 }
 
 impl Game {
-    pub fn start_game(mut self) {
-        println!("start game!");
-        let b: Button = rand::random();
-        self.sequence = vec![b];
-    }
-
     pub fn player_input(&mut self, click: &Button) -> bool {
-        if self.sequence.last().unwrap() != click {
+        if &self.sequence[self.current_index] != click {
             return false;
         }
+        self.current_index += 1;
 
-        let b: Button = rand::random();
-        self.sequence.push(b);
+        if self.sequence.len() == self.current_index {
+            let b: Button = rand::random();
+            self.sequence.push(b);
+            self.current_index = 0;
+            println!("{:?}", self.sequence);
+        }
         return true;
     }
 }
@@ -55,6 +55,12 @@ impl Game {
 impl Default for Game {
     fn default() -> Self {
         let b: Button = rand::random();
-        Game { sequence: vec![b] }
+        let sequence = vec![b];
+        println!("{:?}", sequence);
+        let current_index = 0;
+        Game {
+            sequence,
+            current_index,
+        }
     }
 }
