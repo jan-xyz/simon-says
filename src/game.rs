@@ -1,9 +1,12 @@
+use bevy::prelude::Deref;
+use bevy::prelude::DerefMut;
+use bevy::prelude::Resource;
 use rand::{
     distributions::{Distribution, Standard},
     Rng,
 };
 
-#[derive(Default, Eq, PartialEq)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub enum Button {
     #[default]
     One,
@@ -25,30 +28,33 @@ impl Distribution<Button> for Standard {
     }
 }
 
-#[derive(Default)]
+#[derive(Resource)]
 pub struct Game {
     sequence: Vec<Button>,
 }
 
 impl Game {
-    pub fn new() -> Self {
-        let b: Button = rand::random();
-        Game { sequence: vec![b] }
-    }
-
     pub fn start_game(mut self) {
         println!("start game!");
         let b: Button = rand::random();
         self.sequence = vec![b];
     }
 
-    pub fn player_input(mut self, click: Button) -> bool {
-        if self.sequence.last().unwrap() != &click {
+    pub fn player_input(&mut self, click: &Button) -> bool {
+        if self.sequence.last().unwrap() != click {
             return false;
         }
 
         let b: Button = rand::random();
         self.sequence.push(b);
         return true;
+    }
+}
+
+// custom implementation for unusual values
+impl Default for Game {
+    fn default() -> Self {
+        let b: Button = rand::random();
+        Game { sequence: vec![b] }
     }
 }
