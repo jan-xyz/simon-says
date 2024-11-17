@@ -13,6 +13,7 @@ use bevy::prelude::Commands;
 use bevy::prelude::Component;
 use bevy::prelude::NodeBundle;
 use bevy::prelude::Query;
+use bevy::prelude::ResMut;
 use bevy::ui::AlignItems;
 use bevy::ui::BackgroundColor;
 use bevy::ui::FlexDirection;
@@ -62,7 +63,9 @@ fn ui_system(mut commands: Commands) {
                 background_color: c1.into(),
                 ..default()
             },
-            GameButton { num: 1 },
+            GameButton {
+                num: game::Button::One,
+            },
         ));
         parent.spawn((
             ButtonBundle {
@@ -74,7 +77,9 @@ fn ui_system(mut commands: Commands) {
                 background_color: c2.into(),
                 ..default()
             },
-            GameButton { num: 2 },
+            GameButton {
+                num: game::Button::Two,
+            },
         ));
         parent.spawn((
             ButtonBundle {
@@ -86,7 +91,9 @@ fn ui_system(mut commands: Commands) {
                 background_color: c3.into(),
                 ..default()
             },
-            GameButton { num: 3 },
+            GameButton {
+                num: game::Button::Three,
+            },
         ));
         parent.spawn((
             ButtonBundle {
@@ -98,14 +105,16 @@ fn ui_system(mut commands: Commands) {
                 background_color: c4.into(),
                 ..default()
             },
-            GameButton { num: 4 },
+            GameButton {
+                num: game::Button::Four,
+            },
         ));
     });
 }
 
 #[derive(Component)]
 struct GameButton {
-    num: i64,
+    num: game::Button,
 }
 
 fn button_clicked(
@@ -113,11 +122,13 @@ fn button_clicked(
         (&Interaction, &BackgroundColor, &GameButton),
         Changed<Interaction>,
     >,
+    mut g: ResMut<game::Game>,
 ) {
     for (interaction, _color, button) in &mut interaction_query {
         match interaction {
             Interaction::Pressed => {
-                println!("button pressed: {:?}", button.num)
+                let is_correct = g.player_input(&button.num);
+                println!("{}", is_correct);
             }
             _ => {}
         }
@@ -128,9 +139,8 @@ pub struct SimonSaysPlugin;
 
 impl Plugin for SimonSaysPlugin {
     fn build(&self, app: &mut App) {
-        let g = game::Game::new();
-        g.start_game();
         app.add_systems(Startup, ui_system)
-            .add_systems(Update, button_clicked);
+            .add_systems(Update, button_clicked)
+            .init_resource::<game::Game>();
     }
 }
