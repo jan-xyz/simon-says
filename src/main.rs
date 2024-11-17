@@ -16,10 +16,12 @@ use bevy::prelude::Query;
 use bevy::prelude::ResMut;
 use bevy::ui::AlignItems;
 use bevy::ui::BackgroundColor;
+use bevy::ui::BorderColor;
 use bevy::ui::FlexDirection;
 use bevy::ui::Interaction;
 use bevy::ui::JustifyContent;
 use bevy::ui::Style;
+use bevy::ui::UiRect;
 use bevy::ui::Val;
 use bevy::utils::default;
 use bevy::DefaultPlugins;
@@ -58,9 +60,11 @@ fn ui_system(mut commands: Commands) {
                 style: Style {
                     width: Val::Px(100.),
                     height: Val::Px(100.),
+                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: c1.into(),
+                background_color: Color::BLACK.into(),
+                border_color: c1.into(),
                 ..default()
             },
             GameButton {
@@ -72,9 +76,11 @@ fn ui_system(mut commands: Commands) {
                 style: Style {
                     width: Val::Px(100.),
                     height: Val::Px(100.),
+                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: c2.into(),
+                background_color: Color::BLACK.into(),
+                border_color: c2.into(),
                 ..default()
             },
             GameButton {
@@ -86,9 +92,11 @@ fn ui_system(mut commands: Commands) {
                 style: Style {
                     width: Val::Px(100.),
                     height: Val::Px(100.),
+                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: c3.into(),
+                background_color: Color::BLACK.into(),
+                border_color: c3.into(),
                 ..default()
             },
             GameButton {
@@ -100,9 +108,11 @@ fn ui_system(mut commands: Commands) {
                 style: Style {
                     width: Val::Px(100.),
                     height: Val::Px(100.),
+                    border: UiRect::all(Val::Px(2.0)),
                     ..default()
                 },
-                background_color: c4.into(),
+                background_color: Color::BLACK.into(),
+                border_color: c4.into(),
                 ..default()
             },
             GameButton {
@@ -119,18 +129,26 @@ struct GameButton {
 
 fn button_clicked(
     mut interaction_query: Query<
-        (&Interaction, &BackgroundColor, &GameButton),
+        (
+            &Interaction,
+            &mut BackgroundColor,
+            &BorderColor,
+            &GameButton,
+        ),
         Changed<Interaction>,
     >,
     mut g: ResMut<game::Game>,
 ) {
-    for (interaction, _color, button) in &mut interaction_query {
+    for (interaction, mut bg_color, border_color, button) in &mut interaction_query {
         match interaction {
             Interaction::Pressed => {
+                *bg_color = border_color.0.into();
                 let is_correct = g.player_input(&button.num);
                 println!("{}", is_correct);
             }
-            _ => {}
+            Interaction::Hovered | Interaction::None => {
+                *bg_color = Color::BLACK.into();
+            }
         }
     }
 }
