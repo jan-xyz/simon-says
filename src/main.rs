@@ -5,6 +5,7 @@ use bevy::app::Plugin;
 use bevy::app::Startup;
 use bevy::app::Update;
 use bevy::color::Color;
+use bevy::color::Luminance;
 use bevy::prelude::BuildChildren;
 use bevy::prelude::ButtonBundle;
 use bevy::prelude::Camera2dBundle;
@@ -13,7 +14,10 @@ use bevy::prelude::Commands;
 use bevy::prelude::Component;
 use bevy::prelude::NodeBundle;
 use bevy::prelude::Query;
+use bevy::prelude::Res;
 use bevy::prelude::ResMut;
+use bevy::prelude::With;
+use bevy::time::Time;
 use bevy::ui::AlignItems;
 use bevy::ui::BackgroundColor;
 use bevy::ui::BorderColor;
@@ -146,10 +150,14 @@ fn button_clicked(
                 let is_correct = g.player_input(&button.num);
                 println!("{}", is_correct);
             }
-            Interaction::Hovered | Interaction::None => {
-                *bg_color = Color::BLACK.into();
-            }
+            _ => {}
         }
+    }
+}
+
+fn button_fade(mut button_query: Query<&mut BackgroundColor, With<GameButton>>, time: Res<Time>) {
+    for mut bg_color in &mut button_query {
+        *bg_color = bg_color.0.darker(1.5 * time.delta_seconds()).into()
     }
 }
 
@@ -158,7 +166,7 @@ pub struct SimonSaysPlugin;
 impl Plugin for SimonSaysPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, ui_system)
-            .add_systems(Update, button_clicked)
+            .add_systems(Update, (button_clicked, button_fade))
             .init_resource::<game::Game>();
     }
 }
