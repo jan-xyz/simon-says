@@ -1,5 +1,3 @@
-use bevy::prelude::Deref;
-use bevy::prelude::DerefMut;
 use bevy::prelude::Resource;
 use rand::{
     distributions::{Distribution, Standard},
@@ -30,13 +28,17 @@ impl Distribution<Button> for Standard {
 
 #[derive(Resource)]
 pub struct Game {
-    sequence: Vec<Button>,
+    pub sequence: Vec<Button>,
     current_index: usize,
 }
 
 impl Game {
     pub fn player_input(&mut self, click: &Button) -> bool {
         if &self.sequence[self.current_index] != click {
+            self.current_index = 0;
+            let b: Button = rand::random();
+            self.sequence = vec![b];
+            println!("{:?}", self.sequence);
             return false;
         }
         self.current_index += 1;
