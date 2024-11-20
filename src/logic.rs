@@ -4,7 +4,7 @@ use rand::{
     Rng,
 };
 
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub enum Button {
     #[default]
     One,
@@ -29,7 +29,7 @@ impl Distribution<Button> for Standard {
 #[derive(Resource)]
 pub struct Game {
     pub sequence: Vec<Button>,
-    current_index: usize,
+    pub current_index: usize,
 }
 
 impl Game {
@@ -38,7 +38,6 @@ impl Game {
             self.current_index = 0;
             let b: Button = rand::random();
             self.sequence = vec![b];
-            println!("{:?}", self.sequence);
             return false;
         }
         self.current_index += 1;
@@ -47,7 +46,6 @@ impl Game {
             let b: Button = rand::random();
             self.sequence.push(b);
             self.current_index = 0;
-            println!("{:?}", self.sequence);
         }
         return true;
     }
@@ -58,7 +56,6 @@ impl Default for Game {
     fn default() -> Self {
         let b: Button = rand::random();
         let sequence = vec![b];
-        println!("{:?}", sequence);
         let current_index = 0;
         Game {
             sequence,
