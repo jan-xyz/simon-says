@@ -29,7 +29,6 @@ use bevy::ui::Style;
 use bevy::ui::Val;
 use bevy::utils::default;
 
-use crate::state;
 use crate::state::AppState;
 
 pub struct MenuPlugin;
@@ -95,13 +94,13 @@ fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
 }
 
 fn menu(
-    mut next_state: ResMut<NextState<state::AppState>>,
+    mut next_state: ResMut<NextState<AppState>>,
     mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
 ) {
     for interaction in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
-                next_state.set(state::AppState::InGame);
+                next_state.set(AppState::InGame);
             }
             Interaction::Hovered => {}
             Interaction::None => {}

@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use crate::logic;
-use crate::state;
 use crate::state::AppState;
 use crate::state::GamePhase;
 use bevy::app::App;
@@ -47,7 +46,7 @@ impl Plugin for InGamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup_game)
             .add_systems(OnExit(AppState::InGame), cleanup_game)
-            .add_systems(OnEnter(state::GamePhase::SimonSays), schedule_simon)
+            .add_systems(OnEnter(GamePhase::SimonSays), schedule_simon)
             .add_systems(Update, simon_says.run_if(in_state(GamePhase::SimonSays)))
             .add_systems(Update, player_says.run_if(in_state(GamePhase::PlayerSays)))
             .add_systems(
@@ -191,7 +190,7 @@ struct GameButton {
 }
 
 fn player_says(
-    mut next_state: ResMut<NextState<state::AppState>>,
+    mut next_state: ResMut<NextState<AppState>>,
     mut interaction_query: Query<
         (
             &Interaction,
@@ -210,7 +209,7 @@ fn player_says(
                 *bg_color = border_color.0.into();
                 let is_correct = g.player_input(&button.button);
                 if !is_correct {
-                    next_state.set(state::AppState::Menu);
+                    next_state.set(AppState::Menu);
                 } else if g.current_index == 0 {
                     commands.spawn(PhaseTimer {
                         timer: Timer::new(Duration::from_secs(1), TimerMode::Once),
@@ -281,7 +280,7 @@ struct PhaseTimer {
 }
 
 fn phase_change(
-    mut next_phase: ResMut<NextState<state::GamePhase>>,
+    mut next_phase: ResMut<NextState<GamePhase>>,
     mut q: Query<(Entity, &mut PhaseTimer)>,
     mut commands: Commands,
     time: Res<Time>,
