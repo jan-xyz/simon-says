@@ -68,80 +68,110 @@ fn setup_game(mut commands: Commands) {
     let flex_box = commands
         .spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                flex_direction: FlexDirection::Row,
+                width: Val::Percent(100.),
+                height: Val::Percent(100.),
                 align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
+                flex_direction: FlexDirection::Column,
+                row_gap: Val::Px(10.),
                 ..default()
             },
             ..default()
         })
-        .with_children(|parent| {
-            parent.spawn((
-                ButtonBundle {
+        .with_children(|builder| {
+            builder
+                .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Px(100.),
-                        height: Val::Px(100.),
-                        border: UiRect::all(Val::Px(2.0)),
-                        ..default()
+                        width: Val::Percent(100.),
+                        height: Val::Percent(100.),
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::End,
+                        justify_content: JustifyContent::Center,
+                        column_gap: Val::Px(10.),
+                        ..Default::default()
                     },
-                    background_color: Color::BLACK.into(),
-                    border_color: c1.into(),
-                    ..default()
-                },
-                GameButton {
-                    num: logic::Button::One,
-                },
-            ));
-            parent.spawn((
-                ButtonBundle {
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        ButtonBundle {
+                            style: Style {
+                                width: Val::Px(100.),
+                                height: Val::Px(100.),
+                                border: UiRect::all(Val::Px(2.0)),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.into(),
+                            border_color: c1.into(),
+                            ..default()
+                        },
+                        GameButton {
+                            num: logic::Button::One,
+                        },
+                    ));
+                    parent.spawn((
+                        ButtonBundle {
+                            style: Style {
+                                width: Val::Px(100.),
+                                height: Val::Px(100.),
+                                border: UiRect::all(Val::Px(2.0)),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.into(),
+                            border_color: c2.into(),
+                            ..default()
+                        },
+                        GameButton {
+                            num: logic::Button::Two,
+                        },
+                    ));
+                });
+            builder
+                .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Px(100.),
-                        height: Val::Px(100.),
-                        border: UiRect::all(Val::Px(2.0)),
-                        ..default()
+                        width: Val::Percent(100.),
+                        height: Val::Percent(100.),
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::Start,
+                        justify_content: JustifyContent::Center,
+                        column_gap: Val::Px(10.),
+                        ..Default::default()
                     },
-                    background_color: Color::BLACK.into(),
-                    border_color: c2.into(),
-                    ..default()
-                },
-                GameButton {
-                    num: logic::Button::Two,
-                },
-            ));
-            parent.spawn((
-                ButtonBundle {
-                    style: Style {
-                        width: Val::Px(100.),
-                        height: Val::Px(100.),
-                        border: UiRect::all(Val::Px(2.0)),
-                        ..default()
-                    },
-                    background_color: Color::BLACK.into(),
-                    border_color: c3.into(),
-                    ..default()
-                },
-                GameButton {
-                    num: logic::Button::Three,
-                },
-            ));
-            parent.spawn((
-                ButtonBundle {
-                    style: Style {
-                        width: Val::Px(100.),
-                        height: Val::Px(100.),
-                        border: UiRect::all(Val::Px(2.0)),
-                        ..default()
-                    },
-                    background_color: Color::BLACK.into(),
-                    border_color: c4.into(),
-                    ..default()
-                },
-                GameButton {
-                    num: logic::Button::Four,
-                },
-            ));
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        ButtonBundle {
+                            style: Style {
+                                width: Val::Px(100.),
+                                height: Val::Px(100.),
+                                border: UiRect::all(Val::Px(2.0)),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.into(),
+                            border_color: c3.into(),
+                            ..default()
+                        },
+                        GameButton {
+                            num: logic::Button::Three,
+                        },
+                    ));
+                    parent.spawn((
+                        ButtonBundle {
+                            style: Style {
+                                width: Val::Px(100.),
+                                height: Val::Px(100.),
+                                border: UiRect::all(Val::Px(2.0)),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.into(),
+                            border_color: c4.into(),
+                            ..default()
+                        },
+                        GameButton {
+                            num: logic::Button::Four,
+                        },
+                    ));
+                });
         })
         .id();
     commands.insert_resource(GameData { flex_box });
