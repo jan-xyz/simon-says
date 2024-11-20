@@ -225,7 +225,9 @@ fn player_says(
 
 fn button_fade(mut button_query: Query<&mut BackgroundColor, With<GameButton>>, time: Res<Time>) {
     for mut bg_color in &mut button_query {
-        *bg_color = bg_color.0.darker(1.5 * time.delta_seconds()).into()
+        if bg_color.0.luminance() != 0. {
+            *bg_color = bg_color.0.darker(1.5 * time.delta_seconds()).into()
+        }
     }
 }
 
