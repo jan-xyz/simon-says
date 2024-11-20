@@ -1,7 +1,11 @@
 use crate::logic;
 use crate::state;
+use bevy::app::App;
+use bevy::app::Plugin;
+use bevy::app::Update;
 use bevy::color::Color;
 use bevy::color::Luminance;
+use bevy::prelude::in_state;
 use bevy::prelude::BuildChildren;
 use bevy::prelude::ButtonBundle;
 use bevy::prelude::Changed;
@@ -9,12 +13,16 @@ use bevy::prelude::Commands;
 use bevy::prelude::Component;
 use bevy::prelude::DespawnRecursiveExt;
 use bevy::prelude::Entity;
+use bevy::prelude::IntoSystemConfigs;
 use bevy::prelude::NextState;
 use bevy::prelude::NodeBundle;
+use bevy::prelude::OnEnter;
+use bevy::prelude::OnExit;
 use bevy::prelude::Query;
 use bevy::prelude::Res;
 use bevy::prelude::ResMut;
 use bevy::prelude::Resource;
+use bevy::prelude::States;
 use bevy::prelude::With;
 use bevy::time::Time;
 use bevy::ui::AlignItems;
@@ -28,12 +36,29 @@ use bevy::ui::UiRect;
 use bevy::ui::Val;
 use bevy::utils::default;
 
+pub struct InGamePlugin<S: States>(pub S);
+
+impl<S: States> Plugin for InGamePlugin<S> {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(self.0.clone()), setup_game)
+            .add_systems(OnExit(self.0.clone()), cleanup_game)
+            .add_systems(
+                Update,
+                button_clicked.run_if(in_state(state::GamePhase::PlayerSays)),
+            )
+            .add_systems(
+                Update,
+                (button_clicked, button_fade).run_if(in_state(self.0.clone())),
+            )
+            .init_resource::<logic::Game>();
+    }
+}
 #[derive(Resource)]
 pub struct GameData {
     flex_box: Entity,
 }
 
-pub fn setup_game(mut commands: Commands) {
+fn setup_game(mut commands: Commands) {
     // Add Simon Buttons
     let c1 = Color::hsl(360. * 1 as f32 / 4 as f32, 0.95, 0.7);
     let c2 = Color::hsl(360. * 2 as f32 / 4 as f32, 0.95, 0.7);
@@ -122,17 +147,17 @@ pub fn setup_game(mut commands: Commands) {
     commands.insert_resource(GameData { flex_box });
 }
 
-pub fn cleanup_game(mut commands: Commands, game_data: Res<GameData>) {
+fn cleanup_game(mut commands: Commands, game_data: Res<GameData>) {
     commands.entity(game_data.flex_box).despawn_recursive();
 }
 
 #[derive(Component)]
-pub struct GameButton {
+struct GameButton {
     num: logic::Button,
 }
 
-pub fn button_clicked(
-    mut next_state: ResMut<NextState<state::GameState>>,
+fn button_clicked(
+    mut next_state: ResMut<NextState<state::AppState>>,
     mut interaction_query: Query<
         (
             &Interaction,
@@ -151,7 +176,7 @@ pub fn button_clicked(
                 let is_correct = g.player_input(&button.num);
                 println!("{}", is_correct);
                 if !is_correct {
-                    next_state.set(state::GameState::Menu);
+                    next_state.set(state::AppState::Menu);
                 }
             }
             _ => {}
@@ -159,10 +184,7 @@ pub fn button_clicked(
     }
 }
 
-pub fn button_fade(
-    mut button_query: Query<&mut BackgroundColor, With<GameButton>>,
-    time: Res<Time>,
-) {
+fn button_fade(mut button_query: Query<&mut BackgroundColor, With<GameButton>>, time: Res<Time>) {
     for mut bg_color in &mut button_query {
         *bg_color = bg_color.0.darker(1.5 * time.delta_seconds()).into()
     }

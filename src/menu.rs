@@ -1,4 +1,8 @@
+use bevy::app::App;
+use bevy::app::Plugin;
+use bevy::app::Update;
 use bevy::color::Color;
+use bevy::prelude::in_state;
 use bevy::prelude::BuildChildren;
 use bevy::prelude::Button;
 use bevy::prelude::ButtonBundle;
@@ -6,12 +10,16 @@ use bevy::prelude::Changed;
 use bevy::prelude::Commands;
 use bevy::prelude::DespawnRecursiveExt;
 use bevy::prelude::Entity;
+use bevy::prelude::IntoSystemConfigs;
 use bevy::prelude::NextState;
 use bevy::prelude::NodeBundle;
+use bevy::prelude::OnEnter;
+use bevy::prelude::OnExit;
 use bevy::prelude::Query;
 use bevy::prelude::Res;
 use bevy::prelude::ResMut;
 use bevy::prelude::Resource;
+use bevy::prelude::States;
 use bevy::prelude::TextBundle;
 use bevy::prelude::With;
 use bevy::text::TextStyle;
@@ -24,12 +32,22 @@ use bevy::utils::default;
 
 use crate::state;
 
+pub struct MenuPlugin<S: States>(pub S);
+
+impl<S: States> Plugin for MenuPlugin<S> {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, menu.run_if(in_state(self.0.clone())))
+            .add_systems(OnEnter(self.0.clone()), setup_menu)
+            .add_systems(OnExit(self.0.clone()), cleanup_menu);
+    }
+}
+
 #[derive(Resource)]
-pub struct MenuData {
+struct MenuData {
     button_entity: Entity,
 }
 
-pub fn setup_menu(mut commands: Commands) {
+fn setup_menu(mut commands: Commands) {
     let button_entity = commands
         .spawn(NodeBundle {
             style: Style {
@@ -72,18 +90,18 @@ pub fn setup_menu(mut commands: Commands) {
     commands.insert_resource(MenuData { button_entity });
 }
 
-pub fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
+fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
     commands.entity(menu_data.button_entity).despawn_recursive();
 }
 
-pub fn menu(
-    mut next_state: ResMut<NextState<state::GameState>>,
+fn menu(
+    mut next_state: ResMut<NextState<state::AppState>>,
     mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
 ) {
     for interaction in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
-                next_state.set(state::GameState::InGame);
+                next_state.set(state::AppState::InGame);
             }
             Interaction::Hovered => {}
             Interaction::None => {}
