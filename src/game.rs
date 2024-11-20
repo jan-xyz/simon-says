@@ -1,5 +1,9 @@
+use std::time::Duration;
+
 use crate::logic;
 use crate::state;
+use crate::state::AppState;
+use crate::state::GamePhase;
 use bevy::app::App;
 use bevy::app::Plugin;
 use bevy::app::Update;
@@ -22,9 +26,10 @@ use bevy::prelude::Query;
 use bevy::prelude::Res;
 use bevy::prelude::ResMut;
 use bevy::prelude::Resource;
-use bevy::prelude::States;
 use bevy::prelude::With;
 use bevy::time::Time;
+use bevy::time::Timer;
+use bevy::time::TimerMode;
 use bevy::ui::AlignItems;
 use bevy::ui::BackgroundColor;
 use bevy::ui::BorderColor;
@@ -36,19 +41,18 @@ use bevy::ui::UiRect;
 use bevy::ui::Val;
 use bevy::utils::default;
 
-pub struct InGamePlugin<S: States>(pub S);
+pub struct InGamePlugin;
 
-impl<S: States> Plugin for InGamePlugin<S> {
+impl Plugin for InGamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(self.0.clone()), setup_game)
-            .add_systems(OnExit(self.0.clone()), cleanup_game)
+        app.add_systems(OnEnter(AppState::InGame), setup_game)
+            .add_systems(OnExit(AppState::InGame), cleanup_game)
+            .add_systems(OnEnter(state::GamePhase::SimonSays), schedule_simon)
+            .add_systems(Update, simon_says.run_if(in_state(GamePhase::SimonSays)))
+            .add_systems(Update, player_says.run_if(in_state(GamePhase::PlayerSays)))
             .add_systems(
                 Update,
-                button_clicked.run_if(in_state(state::GamePhase::PlayerSays)),
-            )
-            .add_systems(
-                Update,
-                (button_clicked, button_fade).run_if(in_state(self.0.clone())),
+                (button_fade, phase_change).run_if(in_state(AppState::InGame)),
             )
             .init_resource::<logic::Game>();
     }
@@ -105,7 +109,7 @@ fn setup_game(mut commands: Commands) {
                             ..default()
                         },
                         GameButton {
-                            num: logic::Button::One,
+                            button: logic::Button::One,
                         },
                     ));
                     parent.spawn((
@@ -121,7 +125,7 @@ fn setup_game(mut commands: Commands) {
                             ..default()
                         },
                         GameButton {
-                            num: logic::Button::Two,
+                            button: logic::Button::Two,
                         },
                     ));
                 });
@@ -152,7 +156,7 @@ fn setup_game(mut commands: Commands) {
                             ..default()
                         },
                         GameButton {
-                            num: logic::Button::Three,
+                            button: logic::Button::Three,
                         },
                     ));
                     parent.spawn((
@@ -168,7 +172,7 @@ fn setup_game(mut commands: Commands) {
                             ..default()
                         },
                         GameButton {
-                            num: logic::Button::Four,
+                            button: logic::Button::Four,
                         },
                     ));
                 });
@@ -183,10 +187,10 @@ fn cleanup_game(mut commands: Commands, game_data: Res<GameData>) {
 
 #[derive(Component)]
 struct GameButton {
-    num: logic::Button,
+    button: logic::Button,
 }
 
-fn button_clicked(
+fn player_says(
     mut next_state: ResMut<NextState<state::AppState>>,
     mut interaction_query: Query<
         (
@@ -198,15 +202,20 @@ fn button_clicked(
         Changed<Interaction>,
     >,
     mut g: ResMut<logic::Game>,
+    mut commands: Commands,
 ) {
     for (interaction, mut bg_color, border_color, button) in &mut interaction_query {
         match interaction {
             Interaction::Pressed => {
                 *bg_color = border_color.0.into();
-                let is_correct = g.player_input(&button.num);
-                println!("{}", is_correct);
+                let is_correct = g.player_input(&button.button);
                 if !is_correct {
                     next_state.set(state::AppState::Menu);
+                } else if g.current_index == 0 {
+                    commands.spawn(PhaseTimer {
+                        timer: Timer::new(Duration::from_secs(1), TimerMode::Once),
+                        next_phase: GamePhase::SimonSays,
+                    });
                 }
             }
             _ => {}
@@ -217,5 +226,69 @@ fn button_clicked(
 fn button_fade(mut button_query: Query<&mut BackgroundColor, With<GameButton>>, time: Res<Time>) {
     for mut bg_color in &mut button_query {
         *bg_color = bg_color.0.darker(1.5 * time.delta_seconds()).into()
+    }
+}
+
+fn schedule_simon(mut commands: Commands, g: Res<logic::Game>) {
+    for (i, button) in g.sequence.iter().enumerate() {
+        commands.spawn((SimonTimer {
+            // create the non-repeating fuse timer
+            timer: Timer::new(Duration::from_secs_f64(1. * i as f64), TimerMode::Once),
+            button: button.clone(),
+        },));
+    }
+}
+
+#[derive(Component)]
+struct SimonTimer {
+    /// track when the bomb should explode (non-repeating timer)
+    timer: Timer,
+    button: logic::Button,
+}
+
+fn simon_says(
+    mut q: Query<(Entity, &mut SimonTimer)>,
+    time: Res<Time>,
+    mut commands: Commands,
+    mut button_query: Query<(&mut BackgroundColor, &BorderColor, &GameButton)>,
+) {
+    if q.iter().len() == 0 {
+        commands.spawn(PhaseTimer {
+            timer: Timer::new(Duration::from_secs_f64(0.1), TimerMode::Once),
+            next_phase: GamePhase::PlayerSays,
+        });
+    }
+    for (entity, mut simon_timer) in q.iter_mut() {
+        simon_timer.timer.tick(time.delta());
+
+        if simon_timer.timer.finished() {
+            for (mut bg_color, &border_color, b) in &mut button_query {
+                if b.button == simon_timer.button {
+                    *bg_color = border_color.0.into();
+                }
+            }
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+#[derive(Component)]
+struct PhaseTimer {
+    timer: Timer,
+    next_phase: GamePhase,
+}
+
+fn phase_change(
+    mut next_phase: ResMut<NextState<state::GamePhase>>,
+    mut q: Query<(Entity, &mut PhaseTimer)>,
+    mut commands: Commands,
+    time: Res<Time>,
+) {
+    for (entity, mut phase_timer) in q.iter_mut() {
+        phase_timer.timer.tick(time.delta());
+        if phase_timer.timer.finished() {
+            commands.entity(entity).despawn();
+            next_phase.set(phase_timer.next_phase.clone());
+        }
     }
 }

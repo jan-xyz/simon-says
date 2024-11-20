@@ -28,8 +28,8 @@ impl Plugin for SimonSaysPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<state::AppState>()
             .add_sub_state::<state::GamePhase>()
-            .add_plugins(menu::MenuPlugin(state::AppState::Menu))
-            .add_plugins(game::InGamePlugin(state::AppState::InGame))
+            .add_plugins(menu::MenuPlugin)
+            .add_plugins(game::InGamePlugin)
             .add_systems(Startup, startup);
     }
 }

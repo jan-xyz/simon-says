@@ -19,7 +19,6 @@ use bevy::prelude::Query;
 use bevy::prelude::Res;
 use bevy::prelude::ResMut;
 use bevy::prelude::Resource;
-use bevy::prelude::States;
 use bevy::prelude::TextBundle;
 use bevy::prelude::With;
 use bevy::text::TextStyle;
@@ -31,14 +30,15 @@ use bevy::ui::Val;
 use bevy::utils::default;
 
 use crate::state;
+use crate::state::AppState;
 
-pub struct MenuPlugin<S: States>(pub S);
+pub struct MenuPlugin;
 
-impl<S: States> Plugin for MenuPlugin<S> {
+impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, menu.run_if(in_state(self.0.clone())))
-            .add_systems(OnEnter(self.0.clone()), setup_menu)
-            .add_systems(OnExit(self.0.clone()), cleanup_menu);
+        app.add_systems(Update, menu.run_if(in_state(AppState::Menu)))
+            .add_systems(OnEnter(AppState::Menu), setup_menu)
+            .add_systems(OnExit(AppState::Menu), cleanup_menu);
     }
 }
 
