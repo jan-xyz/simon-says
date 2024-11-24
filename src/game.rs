@@ -229,9 +229,14 @@ fn button_fade(mut button_query: Query<&mut BackgroundColor, With<GameButton>>, 
 
 fn schedule_simon(mut commands: Commands, g: Res<logic::Game>) {
     for (i, button) in g.sequence.iter().enumerate() {
+        let start_offset = 1.;
+        let interval_length = 1.;
         commands.spawn((SimonTimer {
             // create the non-repeating fuse timer
-            timer: Timer::new(Duration::from_secs_f64(1. * i as f64 + 1.), TimerMode::Once),
+            timer: Timer::new(
+                Duration::from_secs_f64(start_offset + interval_length * (i as f64)),
+                TimerMode::Once,
+            ),
             button: button.clone(),
         },));
     }
