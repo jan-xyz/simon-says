@@ -191,6 +191,7 @@ struct GameButton {
 
 fn player_says(
     mut next_state: ResMut<NextState<AppState>>,
+    mut next_phase: ResMut<NextState<GamePhase>>,
     mut interaction_query: Query<
         (
             &Interaction,
@@ -201,7 +202,6 @@ fn player_says(
         Changed<Interaction>,
     >,
     mut g: ResMut<logic::Game>,
-    mut commands: Commands,
 ) {
     for (interaction, mut bg_color, border_color, button) in &mut interaction_query {
         match interaction {
@@ -211,10 +211,7 @@ fn player_says(
                 if !is_correct {
                     next_state.set(AppState::Menu);
                 } else if g.current_index == 0 {
-                    commands.spawn(PhaseTimer {
-                        timer: Timer::new(Duration::from_secs(1), TimerMode::Once),
-                        next_phase: GamePhase::SimonSays,
-                    });
+                    next_phase.set(GamePhase::SimonSays);
                 }
             }
             _ => {}
@@ -234,7 +231,7 @@ fn schedule_simon(mut commands: Commands, g: Res<logic::Game>) {
     for (i, button) in g.sequence.iter().enumerate() {
         commands.spawn((SimonTimer {
             // create the non-repeating fuse timer
-            timer: Timer::new(Duration::from_secs_f64(1. * i as f64), TimerMode::Once),
+            timer: Timer::new(Duration::from_secs_f64(1. * i as f64 + 1.), TimerMode::Once),
             button: button.clone(),
         },));
     }
