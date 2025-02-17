@@ -1,14 +1,14 @@
 module github.com/jan-xyz/simon-says
 
 go 1.22.0
-toolchain go1.22.5
+toolchain go1.23.6
 
 require (
 	github.com/go-echarts/go-echarts/v2 v2.5.1
 	github.com/maxence-charriere/go-app/v9 v9.8.0
 	github.com/mgechev/revive v1.7.0
 	github.com/stretchr/testify v1.10.0
-	honnef.co/go/tools v0.5.1
+	honnef.co/go/tools v0.6.0
 )
 
 require (
