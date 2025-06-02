@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/go-echarts/go-echarts/v2 v2.5.3
+	github.com/go-echarts/go-echarts/v2 v2.5.4
 	github.com/maxence-charriere/go-app/v9 v9.8.0
 	github.com/mgechev/revive v1.10.0
 	github.com/stretchr/testify v1.10.0
