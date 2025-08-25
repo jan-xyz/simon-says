@@ -8,7 +8,7 @@ require (
 	github.com/go-echarts/go-echarts/v2 v2.6.1
 	github.com/maxence-charriere/go-app/v9 v9.8.0
 	github.com/mgechev/revive v1.11.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	honnef.co/go/tools v0.6.1
 )
 
