@@ -15,11 +15,9 @@ vim:
 
 .PHONY: serve
 serve:
-	$(ENV) go build -o web/app.wasm
-	cp styles.css web/
-	cp icon.png web/
-	cp icon.svg web/
-	go run . --serve
+	# install wasm toolchain: `rustup target install wasm32-unknown-unknown`
+	# install wasm-server-runner: `cargo install wasm-server-runner`
+	CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=wasm-server-runner cargo run --target wasm32-unknown-unknown
 
 test:
 	go test ./...
