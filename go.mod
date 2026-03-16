@@ -3,7 +3,7 @@ module github.com/jan-xyz/simon-says
 go 1.25.0
 
 require (
-	github.com/go-echarts/go-echarts/v2 v2.7.0
+	github.com/go-echarts/go-echarts/v2 v2.7.1
 	github.com/maxence-charriere/go-app/v9 v9.8.0
 	github.com/mgechev/revive v1.15.0
 	github.com/stretchr/testify v1.11.1
